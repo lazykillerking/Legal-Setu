@@ -1,0 +1,79 @@
+@media (max-width: 900px) {
+  .chat-container, .empty-state {
+    max-width: 100%;
+  }
+
+  .navbar {
+    padding: 0 16px;
+  }
+}
+
+@media (max-width: 720px) {
+  .navbar-nav {
+    display: none;
+  }
+
+  .hamburger-btn {
+    display: flex;
+  }
+
+  .navbar-left {
+    gap: 12px;
+  }
+
+  .navbar-wordmark {
+    font-size: 14px;
+  }
+
+  .lang-selector .lang-trigger-text {
+    display: none;
+  }
+
+  .recommend-actions {
+    flex-direction: column;
+  }
+
+  .setu-node {
+    width: 74px;
+  }
+
+  .setu-node-label {
+    font-size: 10px;
+  }
+
+  .response-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .response-actions .btn {
+    width: 100%;
+  }
+
+  .user-message-card {
+    max-width: 90%;
+  }
+
+  .page-wrap {
+    padding: 20px 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .empty-heading {
+    font-size: 19px;
+  }
+
+  .suggestion-chip {
+    font-size: 12.5px;
+    padding: 8px 12px;
+  }
+
+  .chat-scroll {
+    padding: 18px 12px 10px;
+  }
+
+  .chat-input-wrap {
+    padding: 10px 12px 14px;
+  }
+}
