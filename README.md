@@ -37,6 +37,12 @@ Background `#F6F8FC` · card `#FFFFFF` · elevated `#F0F4FA` · nested `#E8EEF7`
 
 Fonts: Inter (UI), JetBrains Mono (system logs/code). Logo mark: **LS**.
 
+## Running locally
+
+Initial scaffold: Next.js frontend (`/frontend`), FastAPI backend
+(`/backend`), Supabase schema placeholder (`/supabase`). See
+[SETUP.md](./SETUP.md) for full instructions.
+
 ## Hackathon status
 
 - **Phase 1** (idea screening) — submitted, shortlisted
