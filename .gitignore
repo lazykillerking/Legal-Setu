@@ -1,0 +1,48 @@
+# env / secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# node
+node_modules/
+npm-debug.log*
+yarn-error.log*
+dist/
+build/
+.next/
+.turbo/
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+
+# supabase
+.supabase/
+supabase/.temp/
+
+# editor / os
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# video / media working files (large, keep out of git)
+*.mp4
+*.mov
+*.dnxhd
+*.braw
+*.davinci
+*.drp
+
+# logs
+*.log
+logs/
+
+# claude local settings (personal, not shared)
+.claude/settings.local.json
