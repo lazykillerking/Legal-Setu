@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useApp } from '../context/AppContext.jsx';
 import { useTheme } from '../context/ThemeContext.jsx';
-import { useAuth } from '../context/AuthContext.jsx';
 import LegalIcon from './LegalIcon.jsx';
 
 function initialsOf(name) {
@@ -14,8 +14,8 @@ function initialsOf(name) {
 }
 
 export default function UserMenu() {
+  const { displayName } = useApp();
   const { theme, toggleTheme } = useTheme();
-  const { user, signOut } = useAuth();
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
   const navigate = useNavigate();
@@ -28,16 +28,7 @@ export default function UserMenu() {
     return () => document.removeEventListener('mousedown', onClick);
   }, []);
 
-  const displayName = user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email || 'Account';
-  const email = user?.email || '';
-  const avatarUrl = user?.user_metadata?.avatar_url;
   const initials = initialsOf(displayName);
-
-  async function handleSignOut() {
-    setOpen(false);
-    await signOut();
-    navigate('/');
-  }
 
   return (
     <div className="user-menu" ref={ref}>
@@ -49,17 +40,13 @@ export default function UserMenu() {
         aria-label="Open account menu"
         onClick={() => setOpen((o) => !o)}
       >
-        {avatarUrl ? (
-          <img src={avatarUrl} alt="" className="user-avatar-img" referrerPolicy="no-referrer" />
-        ) : (
-          initials
-        )}
+        {initials}
       </button>
       {open && (
         <div className="dropdown-menu" role="menu">
           <div className="user-menu-header">
             <div className="user-menu-name">{displayName}</div>
-            <div className="user-menu-email">{email}</div>
+            <div className="user-menu-email">swastik1109.sa@gmail.com</div>
           </div>
           <button
             type="button"
@@ -99,7 +86,7 @@ export default function UserMenu() {
             type="button"
             className="dropdown-item"
             role="menuitem"
-            onClick={handleSignOut}
+            onClick={() => setOpen(false)}
           >
             Sign out
             <LegalIcon name="logout" size={14} strokeWidth={2} />
