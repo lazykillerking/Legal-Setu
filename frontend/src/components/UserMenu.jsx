@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext.jsx';
+import { useAuth } from '../context/AuthContext.jsx';
 import { useTheme } from '../context/ThemeContext.jsx';
 import LegalIcon from './LegalIcon.jsx';
 
@@ -15,10 +16,12 @@ function initialsOf(name) {
 
 export default function UserMenu() {
   const { displayName } = useApp();
+  const { user, signOut } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
   const navigate = useNavigate();
+  const email = user?.email ?? '';
 
   useEffect(() => {
     function onClick(e) {
@@ -46,7 +49,7 @@ export default function UserMenu() {
         <div className="dropdown-menu" role="menu">
           <div className="user-menu-header">
             <div className="user-menu-name">{displayName}</div>
-            <div className="user-menu-email">swastik1109.sa@gmail.com</div>
+            <div className="user-menu-email">{email}</div>
           </div>
           <button
             type="button"
@@ -86,7 +89,11 @@ export default function UserMenu() {
             type="button"
             className="dropdown-item"
             role="menuitem"
-            onClick={() => setOpen(false)}
+            onClick={() => {
+              setOpen(false);
+              signOut();
+              navigate('/login');
+            }}
           >
             Sign out
             <LegalIcon name="logout" size={14} strokeWidth={2} />
