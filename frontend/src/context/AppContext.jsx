@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import { useAuth } from './AuthContext.jsx';
 
 const AppContext = createContext(null);
 
@@ -68,9 +69,24 @@ const STRINGS = {
 };
 
 export function AppProvider({ children }) {
+  const { user } = useAuth();
   const [language, setLanguage] = useState('en');
   const [historyCleared, setHistoryCleared] = useState(false);
-  const [displayName, setDisplayName] = useState('Arsh Khandelwal');
+  const [displayName, setDisplayName] = useState('');
+  const [nameEdited, setNameEdited] = useState(false);
+
+  // Default the display name from the signed-in account until the user
+  // edits it themselves in Settings.
+  useEffect(() => {
+    if (nameEdited) return;
+    const fallback = user?.user_metadata?.full_name || user?.email?.split('@')[0] || '';
+    setDisplayName(fallback);
+  }, [user, nameEdited]);
+
+  const updateDisplayName = useCallback((name) => {
+    setNameEdited(true);
+    setDisplayName(name);
+  }, []);
 
   const t = useCallback(
     (key) => (STRINGS[language] && STRINGS[language][key]) || STRINGS.en[key],
@@ -88,7 +104,7 @@ export function AppProvider({ children }) {
         historyCleared,
         clearHistory,
         displayName,
-        setDisplayName,
+        setDisplayName: updateDisplayName,
       }}
     >
       {children}
