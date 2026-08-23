@@ -1,6 +1,8 @@
 import { createContext, useContext, useReducer, useCallback } from 'react';
 import * as api from '../services/legalSetuApi.js';
 import { AGENTS } from '../data/agents.js';
+import { logInteraction } from '../services/interactions.js';
+import { useAuth } from './AuthContext.jsx';
 
 // ---- Orchestration state machine -------------------------------------------------
 // States: idle -> analyzing -> domainIdentified -> agentRecommended -> awaitingApproval
@@ -61,12 +63,14 @@ const ConversationContext = createContext(null);
 
 export function ConversationProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const { user } = useAuth();
 
   const resetConversation = useCallback(() => dispatch({ type: 'RESET' }), []);
 
   const submitQuery = useCallback(async (text, file) => {
     const id = `m_${Date.now()}`;
     dispatch({ type: 'SUBMIT_QUERY', id, text, file });
+    logInteraction(user?.id, 'query', text, { hasFile: Boolean(file) });
     try {
       dispatch({ type: 'SET_STATUS', status: 'analyzing' });
       const { response } = await api.submitQuery(text);
@@ -76,9 +80,15 @@ export function ConversationProvider({ children }) {
     }
   }, []);
 
-  const approve = useCallback(() => {}, []);
+  const approve = useCallback(() => {
+    logInteraction(user?.id, 'agent_approval', state.recommendation?.agent?.name);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.recommendation]);
 
-  const deny = useCallback(() => {}, []);
+  const deny = useCallback(() => {
+    logInteraction(user?.id, 'agent_denial', state.recommendation?.agent?.name);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.recommendation]);
 
   const retry = useCallback(() => {
     dispatch({ type: 'AWAIT_APPROVAL' });

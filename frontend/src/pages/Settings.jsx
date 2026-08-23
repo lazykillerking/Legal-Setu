@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext.jsx';
 import { useApp, LANGUAGES } from '../context/AppContext.jsx';
+import { useAuth } from '../context/AuthContext.jsx';
 
 function Toggle({ on, onClick, label }) {
   return (
@@ -21,7 +23,14 @@ export default function Settings() {
   const { theme, setTheme } = useTheme();
   const { language, setLanguage, displayName, setDisplayName, clearHistory, historyCleared } =
     useApp();
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   const [name, setName] = useState(displayName);
+
+  async function handleSignOut() {
+    await signOut();
+    navigate('/');
+  }
   const [dataSharing, setDataSharing] = useState(false);
   const [analytics, setAnalytics] = useState(true);
 
@@ -119,6 +128,19 @@ export default function Settings() {
             <div className="settings-row-label">Usage analytics</div>
           </div>
           <Toggle on={analytics} onClick={() => setAnalytics((v) => !v)} label="Usage analytics" />
+        </div>
+      </div>
+
+      <div className="settings-section">
+        <div className="settings-section-title">Account</div>
+        <div className="settings-row">
+          <div>
+            <div className="settings-row-label">Signed in as</div>
+            <div className="settings-row-sub">{user?.email}</div>
+          </div>
+          <button type="button" className="btn btn-danger-ghost" onClick={handleSignOut}>
+            Sign out
+          </button>
         </div>
       </div>
     </div>

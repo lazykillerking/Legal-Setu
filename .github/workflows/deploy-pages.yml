@@ -42,6 +42,9 @@ jobs:
       - name: Copy CNAME into build output
         run: cp CNAME frontend/dist/CNAME
 
+      - name: SPA fallback for client-side routes
+        run: cp frontend/dist/index.html frontend/dist/404.html
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 

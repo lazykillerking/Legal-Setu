@@ -5,11 +5,13 @@ import LanguageSelector from './LanguageSelector.jsx';
 import ThemeToggle from './ThemeToggle.jsx';
 import UserMenu from './UserMenu.jsx';
 import { useConversation } from '../context/ConversationContext.jsx';
+import { useAuth } from '../context/AuthContext.jsx';
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const navigate = useNavigate();
   const { resetConversation } = useConversation();
+  const { user, loading } = useAuth();
 
   function handleNewChat() {
     setMobileOpen(false);
@@ -51,7 +53,18 @@ export default function Navbar() {
         <div className="navbar-right">
           <LanguageSelector />
           <ThemeToggle />
-          <UserMenu />
+          {!loading && (user ? (
+            <UserMenu />
+          ) : (
+            <button
+              type="button"
+              className="navbar-login-btn"
+              onClick={() => navigate('/login')}
+            >
+              <LegalIcon name="user" size={14} strokeWidth={2} />
+              Log in
+            </button>
+          ))}
         </div>
       </header>
 
