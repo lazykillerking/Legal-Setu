@@ -386,6 +386,34 @@
   font-size: 14px;
   font-weight: 600;
   font-family: var(--font-ui);
+  color: var(--text-primary);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 11px 14px;
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.google-btn:hover:not(:disabled) {
+  background: var(--surface-soft);
+  border-color: var(--border-strong);
+}
+
+.google-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.primary-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--font-ui);
   color: #fff;
   background: var(--primary);
   border: none;
@@ -395,13 +423,30 @@
   transition: background var(--transition-fast);
 }
 
-.google-btn:hover:not(:disabled) {
+.primary-btn:hover:not(:disabled) {
   background: var(--primary-hover);
 }
 
-.google-btn:disabled {
+.primary-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.login-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 18px 0;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.login-divider::before,
+.login-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
 }
 
 .login-footnote {

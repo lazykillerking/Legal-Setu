@@ -72,6 +72,22 @@ export function AuthProvider({ children }) {
     return { error };
   }, []);
 
+  const signInWithGoogle = useCallback(async () => {
+    if (!supabase) {
+      setAuthError('App is missing Supabase configuration. Sign-in is unavailable.');
+      return { error: true };
+    }
+    setAuthError(null);
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin,
+      },
+    });
+    if (error) setAuthError(friendlyAuthError(error));
+    return { error };
+  }, []);
+
   const signOut = useCallback(async () => {
     if (!supabase) return;
     setAuthError(null);
@@ -88,6 +104,7 @@ export function AuthProvider({ children }) {
     authError,
     clearAuthError,
     signInWithMagicLink,
+    signInWithGoogle,
     signOut,
   };
 
