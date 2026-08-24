@@ -31,6 +31,9 @@ export const LANGUAGES = [
   { code: 'brx', label: 'बड़ो' },
 ];
 
+// Urdu and Sindhi are written right-to-left (Perso-Arabic script).
+const RTL_LANGUAGES = new Set(['ur', 'sd']);
+
 // Site-wide UI copy, keyed by dot-path (e.g. "chat.heading"). t() falls back
 // to English for any key missing in the active language, so partial
 // coverage degrades gracefully instead of breaking.
@@ -2705,6 +2708,11 @@ export function AppProvider({ children }) {
     setNameEdited(true);
     setDisplayName(name);
   }, []);
+
+  useEffect(() => {
+    document.documentElement.dir = RTL_LANGUAGES.has(language) ? 'rtl' : 'ltr';
+    document.documentElement.lang = language;
+  }, [language]);
 
   const t = useCallback(
     (key) => {
