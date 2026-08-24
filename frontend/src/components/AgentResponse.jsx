@@ -13,8 +13,9 @@ function FormattedResponse({ text }) {
   const normalized = text
     .replace(/\s*---\s*/g, '\n\n')
     .replace(/\s+(#{1,6}\s+)/g, '\n\n$1')
-    .replace(/\s+(\d+\.\s+\*\*)/g, '\n\n$1')
+    .replace(/\s+(\d+\.\s+\*\*[^*]+\*\*)/g, '\n\n### $1')
     .replace(/\s+-\s+(?=[A-Z*])/g, '\n- ')
+    .replace(/(#{1,6}\s+[^\n]+)\n(?!\n)/g, '$1\n\n')
     .trim();
   const blocks = normalized.split(/\n{2,}/).filter(Boolean);
 
@@ -23,7 +24,15 @@ function FormattedResponse({ text }) {
       const heading = block.match(/^#{1,6}\s+(.+)/);
       const lines = block.split('\n').filter(Boolean);
       const isList = lines.every((line) => /^(-|\d+\.)\s+/.test(line));
+      const isQuote = lines.every((line) => /^>\s?/.test(line));
       if (heading) return <h2 key={index}><InlineText text={heading[1]} /></h2>;
+      if (isQuote) return <blockquote key={index}>{lines.map((line, quoteIndex) => <p key={quoteIndex}><InlineText text={line.replace(/^>\s?/, '')} /></p>)}</blockquote>;
+      if (isList && lines[0].endsWith(':')) {
+        return <div key={index} className="formatted-list-section">
+          <p><InlineText text={lines[0].replace(/^(-|\d+\.)\s+/, '')} /></p>
+          <ul>{lines.slice(1).map((line, itemIndex) => <li key={itemIndex}><InlineText text={line.replace(/^(-|\d+\.)\s+/, '')} /></li>)}</ul>
+        </div>;
+      }
       if (isList) return <ul key={index}>{lines.map((line, itemIndex) => <li key={itemIndex}><InlineText text={line.replace(/^(-|\d+\.)\s+/, '')} /></li>)}</ul>;
       return <p key={index}><InlineText text={block.replace(/\n/g, ' ')} /></p>;
     })}
