@@ -154,6 +154,7 @@ const STRINGS = {
       continueGoogle: 'Continue with Google',
       or: 'or',
       emailPlaceholder: 'you@example.com',
+      namePlaceholder: 'Your name',
       sending: 'Sending link…',
       sendLink: 'Send magic link',
       terms: 'By continuing you agree this is a hackathon prototype, not a substitute for professional legal advice.',

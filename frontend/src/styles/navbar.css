@@ -216,6 +216,26 @@
   position: relative;
 }
 
+.user-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 230px;
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--surface) 94%, transparent);
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  z-index: 100;
+  animation: dropdown-in var(--transition-fast);
+}
+
+.user-dropdown-menu .dropdown-item {
+  min-height: 38px;
+}
+
 .user-avatar {
   width: 34px;
   height: 34px;
