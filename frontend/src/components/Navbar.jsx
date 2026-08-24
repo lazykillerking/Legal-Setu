@@ -39,7 +39,7 @@ export default function Navbar() {
           <nav className="navbar-nav" aria-label="Primary">
             <button type="button" className="navbar-nav-item" onClick={handleNewChat}>
               <LegalIcon name="plus" size={15} strokeWidth={2} />
-              {t('newChat')}
+              {t('nav.newChat')}
             </button>
             <NavLink
               to="/history"
@@ -60,7 +60,7 @@ export default function Navbar() {
       <div className={`mobile-nav-panel${mobileOpen ? ' open' : ''}`}>
         <button type="button" className="navbar-nav-item" onClick={handleNewChat}>
           <LegalIcon name="plus" size={15} strokeWidth={2} />
-          {t('newChat')}
+          {t('nav.newChat')}
         </button>
         <NavLink
           to="/history"
