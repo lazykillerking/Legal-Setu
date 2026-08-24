@@ -15,7 +15,7 @@ function initialsOf(name) {
 }
 
 export default function UserMenu() {
-  const { displayName } = useApp();
+  const { displayName, t } = useApp();
   const { user, signOut } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [open, setOpen] = useState(false);
@@ -60,7 +60,7 @@ export default function UserMenu() {
               navigate('/profile');
             }}
           >
-            Profile
+            {t('userMenu.profile')}
           </button>
           <button
             type="button"
@@ -71,17 +71,17 @@ export default function UserMenu() {
               navigate('/settings');
             }}
           >
-            Settings
+            {t('userMenu.settings')}
           </button>
           <div className="dropdown-divider" />
-          <div className="dropdown-label">Theme</div>
+          <div className="dropdown-label">{t('userMenu.theme')}</div>
           <button
             type="button"
             className="dropdown-item"
             role="menuitem"
             onClick={toggleTheme}
           >
-            {theme === 'dark' ? 'Dark mode' : 'Light mode'}
+            {theme === 'dark' ? t('userMenu.darkMode') : t('userMenu.lightMode')}
             <LegalIcon name={theme === 'dark' ? 'moon' : 'sun'} size={14} strokeWidth={2} />
           </button>
           <div className="dropdown-divider" />
@@ -95,7 +95,7 @@ export default function UserMenu() {
               navigate('/login');
             }}
           >
-            Sign out
+            {t('userMenu.signOut')}
             <LegalIcon name="logout" size={14} strokeWidth={2} />
           </button>
         </div>

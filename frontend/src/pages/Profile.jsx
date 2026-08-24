@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
+import { useApp } from '../context/AppContext.jsx';
 import { supabase } from '../services/supabaseClient.js';
 
 function initialsOf(name) {
@@ -14,6 +15,7 @@ function initialsOf(name) {
 
 export default function Profile() {
   const { user } = useAuth();
+  const { t } = useApp();
   const [profile, setProfile] = useState(null);
 
   useEffect(() => {
@@ -44,8 +46,8 @@ export default function Profile() {
 
   return (
     <div className="page-wrap">
-      <h1 className="page-title">Profile</h1>
-      <p className="page-subtitle">Your account details on Legal Setu.</p>
+      <h1 className="page-title">{t('profile.title')}</h1>
+      <p className="page-subtitle">{t('profile.desc')}</p>
 
       <div className="profile-header">
         {avatarUrl ? (
@@ -60,21 +62,21 @@ export default function Profile() {
       </div>
 
       <div className="settings-section">
-        <div className="settings-section-title">Account</div>
+        <div className="settings-section-title">{t('profile.account')}</div>
         <div className="settings-row">
-          <span className="settings-row-label">Full name</span>
+          <span className="settings-row-label">{t('profile.fullName')}</span>
           <span className="settings-row-sub">{displayName}</span>
         </div>
         <div className="settings-row">
-          <span className="settings-row-label">Email</span>
+          <span className="settings-row-label">{t('profile.email')}</span>
           <span className="settings-row-sub">{user?.email}</span>
         </div>
         <div className="settings-row">
-          <span className="settings-row-label">Signed in via</span>
+          <span className="settings-row-label">{t('profile.signedInVia')}</span>
           <span className="settings-row-sub">{profile?.provider || 'email'}</span>
         </div>
         <div className="settings-row">
-          <span className="settings-row-label">Member since</span>
+          <span className="settings-row-label">{t('profile.memberSince')}</span>
           <span className="settings-row-sub">{memberSince}</span>
         </div>
       </div>

@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState, forwardRef, useImperativeHandle } from 'react';
 import LegalIcon from './LegalIcon.jsx';
+import { useApp } from '../context/AppContext.jsx';
 
 const ChatInput = forwardRef(function ChatInput(
   { value, onChange, onSend, disabled, placeholder },
   ref
 ) {
+  const { t } = useApp();
   const textareaRef = useRef(null);
   const fileInputRef = useRef(null);
   const [file, setFile] = useState(null);
@@ -111,7 +113,7 @@ const ChatInput = forwardRef(function ChatInput(
           <LegalIcon name="send" size={16} strokeWidth={1.8} />
         </button>
       </div>
-      <div className="chat-input-hint">Enter to send · Shift + Enter for a new line</div>
+      <div className="chat-input-hint">{t('chat.inputHint')}</div>
     </div>
   );
 });

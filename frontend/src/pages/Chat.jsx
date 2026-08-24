@@ -11,17 +11,7 @@ import HandoffCard from '../components/HandoffCard.jsx';
 import AgentResponse from '../components/AgentResponse.jsx';
 import LegalIcon from '../components/LegalIcon.jsx';
 
-const SUGGESTIONS = [
-  'Review a contract',
-  'Know my tenant rights',
-  'Draft a legal notice',
-];
-
-const SUGGESTION_TEXT = {
-  'Review a contract': 'Can you review my rental contract before I sign it?',
-  'Know my tenant rights': 'My landlord is refusing to return my security deposit.',
-  'Draft a legal notice': 'I need to draft a legal notice to my landlord about my security deposit.',
-};
+const SUGGESTION_IDS = ['suggestion1', 'suggestion2', 'suggestion3'];
 
 export default function Chat() {
   const { state, submitQuery, approve, deny, retry } = useConversation();
@@ -41,8 +31,8 @@ export default function Chat() {
     }
   }, [state.status, state.messages]);
 
-  function handleSuggestionClick(suggestion) {
-    setInputValue(SUGGESTION_TEXT[suggestion] || suggestion);
+  function handleSuggestionClick(id) {
+    setInputValue(t(`chat.suggestionText${id.slice(-1)}`));
     inputRef.current?.focus();
   }
 
@@ -69,17 +59,17 @@ export default function Chat() {
             <div className="empty-icon-wrap">
               <LegalIcon name="scales" size={30} strokeWidth={1.6} />
             </div>
-            <h1 className="empty-heading">{t('heading')}</h1>
-            <p className="empty-subheading">{t('subheading')}</p>
+            <h1 className="empty-heading">{t('chat.heading')}</h1>
+            <p className="empty-subheading">{t('chat.subheading')}</p>
             <div className="suggestion-row">
-              {SUGGESTIONS.map((s) => (
+              {SUGGESTION_IDS.map((id) => (
                 <button
-                  key={s}
+                  key={id}
                   type="button"
                   className="suggestion-chip"
-                  onClick={() => handleSuggestionClick(s)}
+                  onClick={() => handleSuggestionClick(id)}
                 >
-                  {s}
+                  {t(`chat.${id}`)}
                 </button>
               ))}
             </div>
@@ -106,10 +96,10 @@ export default function Chat() {
 
             {showApprovedStatus && state.recommendation && (
               <ExpandableStatus
-                label={`${state.recommendation.agent.name} approved by user`}
+                label={`${state.recommendation.agent.name} ${t('chat.approvedSuffix')}`}
                 variant="success"
               >
-                User approved the recommended specialist. Preparing a contextual handoff...
+                {t('chat.approvedBody')}
               </ExpandableStatus>
             )}
 
@@ -117,11 +107,11 @@ export default function Chat() {
               <div className="denied-card">
                 <div className="denied-title">
                   <LegalIcon name="x" size={15} strokeWidth={2} />
-                  Agent request denied
+                  {t('chat.deniedTitle')}
                 </div>
                 <div className="denied-text">{state.denialMessage}</div>
                 <button type="button" className="btn btn-primary" onClick={retry}>
-                  Try a different specialist
+                  {t('chat.tryDifferent')}
                 </button>
               </div>
             )}
@@ -136,11 +126,11 @@ export default function Chat() {
 
             {showResponseStatus && state.handoff && (
               <ExpandableStatus
-                label={`${state.handoff.targetAgent.name} — response ready`}
+                label={`${state.handoff.targetAgent.name} — ${t('chat.responseReadySuffix')}`}
                 variant="success"
                 defaultOpen
               >
-                Your specialist has prepared a response based on the context shared during handoff.
+                {t('chat.handoffBody')}
               </ExpandableStatus>
             )}
 
@@ -152,14 +142,14 @@ export default function Chat() {
               <div className="error-card">
                 <LegalIcon name="alertTriangle" size={18} strokeWidth={2} />
                 <div>
-                  <div>We couldn&apos;t complete that step. Please try again.</div>
+                  <div>{t('chat.errorBody')}</div>
                   <button
                     type="button"
                     className="btn btn-primary"
                     style={{ marginTop: 10 }}
                     onClick={retry}
                   >
-                    Try Again
+                    {t('chat.tryAgain')}
                   </button>
                 </div>
               </div>
@@ -182,7 +172,7 @@ export default function Chat() {
             'handoff',
             'agentWorking',
           ].includes(state.status)}
-          placeholder={t('placeholder')}
+          placeholder={t('chat.placeholder')}
         />
       </div>
     </div>

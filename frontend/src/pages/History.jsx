@@ -50,19 +50,19 @@ const GROUPS = [
 ];
 
 export default function History() {
-  const { historyCleared } = useApp();
+  const { historyCleared, t } = useApp();
   const [selected, setSelected] = useState(null);
 
   const groups = historyCleared ? [] : GROUPS;
 
   return (
     <div className="page-wrap">
-      <h1 className="page-title">Conversation History</h1>
-      <p className="page-subtitle">Revisit past conversations with the Legal Orchestrator.</p>
+      <h1 className="page-title">{t('history.title')}</h1>
+      <p className="page-subtitle">{t('history.subtitle')}</p>
 
       {groups.length === 0 && (
         <div className="card" style={{ padding: 24, textAlign: 'center', color: 'var(--text-muted)' }}>
-          No conversation history yet.
+          {t('history.empty')}
         </div>
       )}
 
@@ -91,12 +91,11 @@ export default function History() {
       {selected && (
         <div className="card history-detail-card">
           <div className="uppercase-label" style={{ marginBottom: 8 }}>
-            Conversation
+            {t('history.conversation')}
           </div>
           <h2 style={{ margin: '0 0 6px', fontSize: 16 }}>{selected.title}</h2>
           <p style={{ margin: 0, fontSize: 13.5, color: 'var(--text-secondary)' }}>
-            {selected.sub}. This is a static demo view — reopen a full session from the primary
-            chat experience.
+            {selected.sub}. {t('history.staticDemo')}
           </p>
         </div>
       )}

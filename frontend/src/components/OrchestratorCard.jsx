@@ -1,17 +1,15 @@
 import { useEffect, useState } from 'react';
 import StatusDot from './StatusDot.jsx';
+import { useApp } from '../context/AppContext.jsx';
 
-const SUBSTEPS = [
-  'Understanding the situation',
-  'Identifying legal domain',
-  'Selecting relevant expertise',
-];
+const SUBSTEP_IDS = ['step1', 'step2', 'step3'];
 
 export default function OrchestratorCard() {
+  const { t } = useApp();
   const [visibleSteps, setVisibleSteps] = useState(0);
 
   useEffect(() => {
-    const timers = SUBSTEPS.map((_, i) =>
+    const timers = SUBSTEP_IDS.map((_, i) =>
       setTimeout(() => setVisibleSteps((v) => Math.max(v, i + 1)), 220 * i)
     );
     return () => timers.forEach(clearTimeout);
@@ -21,14 +19,14 @@ export default function OrchestratorCard() {
     <div className="orch-card" role="status" aria-live="polite">
       <div className="orch-header">
         <StatusDot pulse />
-        <span className="orch-title">Legal Orchestrator</span>
+        <span className="orch-title">{t('orchestrator.title')}</span>
       </div>
-      <div className="orch-status-text">Analyzing your query…</div>
+      <div className="orch-status-text">{t('orchestrator.analyzing')}</div>
       <div className="orch-substeps">
-        {SUBSTEPS.slice(0, visibleSteps).map((step) => (
-          <div key={step} className="orch-substep">
+        {SUBSTEP_IDS.slice(0, visibleSteps).map((id) => (
+          <div key={id} className="orch-substep">
             <StatusDot pulse />
-            {step}
+            {t(`orchestrator.${id}`)}
           </div>
         ))}
       </div>

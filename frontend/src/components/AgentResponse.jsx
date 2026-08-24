@@ -1,6 +1,8 @@
 import LegalIcon from './LegalIcon.jsx';
+import { useApp } from '../context/AppContext.jsx';
 
 export default function AgentResponse({ response, onAction }) {
+  const { t } = useApp();
   const { agent, lead, steps, note, actions } = response;
 
   return (
@@ -37,7 +39,7 @@ export default function AgentResponse({ response, onAction }) {
 
       <div className="response-disclaimer">
         <LegalIcon name="alertTriangle" size={15} strokeWidth={2} />
-        Legal Setu provides AI-assisted legal information and does not replace professional legal advice.
+        {t('agentResponse.disclaimer')}
       </div>
     </div>
   );

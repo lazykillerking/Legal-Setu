@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
+import { useApp } from '../context/AppContext.jsx';
 import LegalIcon from '../components/LegalIcon.jsx';
 
 function GoogleGlyph() {
@@ -29,6 +30,7 @@ function GoogleGlyph() {
 export default function Login() {
   const { user, loading, authError, clearAuthError, signInWithMagicLink, signInWithGoogle } =
     useAuth();
+  const { t } = useApp();
   const [email, setEmail] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [googleSubmitting, setGoogleSubmitting] = useState(false);
@@ -64,11 +66,8 @@ export default function Login() {
         <div className="empty-icon-wrap" style={{ margin: '0 auto 18px' }}>
           <LegalIcon name="scales" size={28} strokeWidth={1.6} />
         </div>
-        <h1 className="login-title">Welcome to Legal Setu</h1>
-        <p className="login-subtitle">
-          Sign in to get personalized legal guidance, with your conversation history and
-          context saved to your account.
-        </p>
+        <h1 className="login-title">{t('login.welcome')}</h1>
+        <p className="login-subtitle">{t('login.desc')}</p>
 
         {authError && (
           <div className="login-error" role="alert">
@@ -80,8 +79,7 @@ export default function Login() {
         {sent ? (
           <div className="login-success" role="status">
             <LegalIcon name="send" size={15} strokeWidth={2} />
-            Magic link sent to <strong>{email}</strong>. Check your inbox and click it to sign
-            in.
+            {t('login.magicSentPrefix')} <strong>{email}</strong>{t('login.magicSentSuffix')}
           </div>
         ) : (
           <>
@@ -92,18 +90,18 @@ export default function Login() {
               disabled={googleSubmitting || loading}
             >
               <GoogleGlyph />
-              {googleSubmitting ? 'Redirecting to Google…' : 'Continue with Google'}
+              {googleSubmitting ? t('login.redirecting') : t('login.continueGoogle')}
             </button>
 
             <div className="login-divider">
-              <span>or</span>
+              <span>{t('login.or')}</span>
             </div>
 
             <form className="login-form" onSubmit={handleSubmit}>
               <input
                 type="email"
                 className="login-input"
-                placeholder="you@example.com"
+                placeholder={t('login.emailPlaceholder')}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 autoComplete="email"
@@ -115,16 +113,13 @@ export default function Login() {
                 className="primary-btn"
                 disabled={submitting || loading || !email.trim()}
               >
-                {submitting ? 'Sending link…' : 'Send magic link'}
+                {submitting ? t('login.sending') : t('login.sendLink')}
               </button>
             </form>
           </>
         )}
 
-        <p className="login-footnote">
-          By continuing you agree this is a hackathon prototype, not a substitute for
-          professional legal advice.
-        </p>
+        <p className="login-footnote">{t('login.terms')}</p>
       </div>
     </div>
   );

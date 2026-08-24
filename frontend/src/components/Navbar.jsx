@@ -46,7 +46,7 @@ export default function Navbar() {
               className={({ isActive }) => `navbar-nav-item${isActive ? ' active' : ''}`}
             >
               <LegalIcon name="history" size={15} strokeWidth={2} />
-              History
+              {t('nav.history')}
             </NavLink>
           </nav>
         </div>
@@ -68,7 +68,7 @@ export default function Navbar() {
           onClick={() => setMobileOpen(false)}
         >
           <LegalIcon name="history" size={15} strokeWidth={2} />
-          History
+          {t('nav.history')}
         </NavLink>
       </div>
     </>

@@ -19,7 +19,7 @@ function Toggle({ on, onClick, label }) {
 
 export default function Settings() {
   const { theme, setTheme } = useTheme();
-  const { language, setLanguage, displayName, setDisplayName, clearHistory, historyCleared } =
+  const { language, setLanguage, displayName, setDisplayName, clearHistory, historyCleared, t } =
     useApp();
   const [name, setName] = useState(displayName);
   const [dataSharing, setDataSharing] = useState(false);
@@ -27,16 +27,16 @@ export default function Settings() {
 
   return (
     <div className="page-wrap">
-      <h1 className="page-title">Settings</h1>
-      <p className="page-subtitle">Manage your appearance, language, and conversation data.</p>
+      <h1 className="page-title">{t('settings.title')}</h1>
+      <p className="page-subtitle">{t('settings.subtitle')}</p>
 
       <div className="settings-section">
-        <div className="settings-section-title">Appearance</div>
-        <div className="settings-section-desc">Choose how Legal Setu looks on your device.</div>
+        <div className="settings-section-title">{t('settings.appearance')}</div>
+        <div className="settings-section-desc">{t('settings.appearanceDesc')}</div>
         <div className="settings-row">
           <div>
-            <div className="settings-row-label">Theme</div>
-            <div className="settings-row-sub">Light or dark mode, synced across the app.</div>
+            <div className="settings-row-label">{t('settings.theme')}</div>
+            <div className="settings-row-sub">{t('settings.themeDesc')}</div>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
             <button
@@ -44,26 +44,24 @@ export default function Settings() {
               className={`btn${theme === 'light' ? ' btn-primary' : ''}`}
               onClick={() => setTheme('light')}
             >
-              Light
+              {t('settings.light')}
             </button>
             <button
               type="button"
               className={`btn${theme === 'dark' ? ' btn-primary' : ''}`}
               onClick={() => setTheme('dark')}
             >
-              Dark
+              {t('settings.dark')}
             </button>
           </div>
         </div>
       </div>
 
       <div className="settings-section">
-        <div className="settings-section-title">Language</div>
-        <div className="settings-section-desc">
-          A handful of interface strings switch for this demo — full translation is out of scope.
-        </div>
+        <div className="settings-section-title">{t('settings.language')}</div>
+        <div className="settings-section-desc">{t('settings.languageNote')}</div>
         <div className="settings-row">
-          <span className="settings-row-label">Interface language</span>
+          <span className="settings-row-label">{t('settings.interfaceLanguage')}</span>
           <select
             className="settings-input"
             value={language}
@@ -79,9 +77,9 @@ export default function Settings() {
       </div>
 
       <div className="settings-section">
-        <div className="settings-section-title">Profile</div>
+        <div className="settings-section-title">{t('settings.profile')}</div>
         <div className="settings-row">
-          <span className="settings-row-label">Display name</span>
+          <span className="settings-row-label">{t('settings.displayName')}</span>
           <input
             className="settings-input"
             value={name}
@@ -92,31 +90,31 @@ export default function Settings() {
       </div>
 
       <div className="settings-section">
-        <div className="settings-section-title">Conversation</div>
+        <div className="settings-section-title">{t('settings.conversation')}</div>
         <div className="settings-row">
           <div>
-            <div className="settings-row-label">Clear history</div>
+            <div className="settings-row-label">{t('settings.clearHistory')}</div>
             <div className="settings-row-sub">
-              {historyCleared ? 'Conversation history has been cleared.' : 'Remove all saved conversations.'}
+              {historyCleared ? t('settings.clearedMsg') : t('settings.clearDesc')}
             </div>
           </div>
           <button type="button" className="btn btn-danger-ghost" onClick={clearHistory}>
-            Clear history
+            {t('settings.clearHistory')}
           </button>
         </div>
       </div>
 
       <div className="settings-section">
-        <div className="settings-section-title">Privacy</div>
+        <div className="settings-section-title">{t('settings.privacy')}</div>
         <div className="settings-row">
           <div>
-            <div className="settings-row-label">Share anonymized data to improve responses</div>
+            <div className="settings-row-label">{t('settings.shareData')}</div>
           </div>
           <Toggle on={dataSharing} onClick={() => setDataSharing((v) => !v)} label="Data sharing" />
         </div>
         <div className="settings-row">
           <div>
-            <div className="settings-row-label">Usage analytics</div>
+            <div className="settings-row-label">{t('settings.usageAnalytics')}</div>
           </div>
           <Toggle on={analytics} onClick={() => setAnalytics((v) => !v)} label="Usage analytics" />
         </div>
