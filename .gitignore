@@ -46,3 +46,6 @@ logs/
 
 # claude local settings (personal, not shared)
 .claude/settings.local.json
+
+# task tracking file (local only)
+LAST_TASK.md
