@@ -24,17 +24,44 @@ export default function Chat() {
   const [inputValue, setInputValue] = useState('');
   const inputRef = useRef(null);
   const scrollRef = useRef(null);
+  const contentRef = useRef(null);
+  const isAtBottomRef = useRef(true);
+  const BOTTOM_THRESHOLD = 80;
 
   const isEmpty = state.messages.length === 0;
   const hasApprovalDecision = ['approved', 'handoff', 'agentWorking', 'responseReady', 'denied'].includes(
     state.status
   );
 
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+  function handleScroll() {
+    const el = scrollRef.current;
+    if (!el) return;
+    isAtBottomRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < BOTTOM_THRESHOLD;
+  }
+
+  function scrollToBottomIfFollowing() {
+    const el = scrollRef.current;
+    if (el && isAtBottomRef.current) {
+      el.scrollTop = el.scrollHeight;
     }
+  }
+
+  // New message (or a new conversation stage) always pulls the view back
+  // to the bottom — the user just sent/triggered it.
+  useEffect(() => {
+    isAtBottomRef.current = true;
+    scrollToBottomIfFollowing();
   }, [state.status, state.messages]);
+
+  // As the response types itself out (or anything else grows in height),
+  // keep following the bottom only if the user hasn't scrolled up.
+  useEffect(() => {
+    const content = contentRef.current;
+    if (!content || typeof ResizeObserver === 'undefined') return undefined;
+    const observer = new ResizeObserver(() => scrollToBottomIfFollowing());
+    observer.observe(content);
+    return () => observer.disconnect();
+  }, []);
 
   function handleSuggestionClick(id) {
     setInputValue(t(`chat.suggestionText${id.slice(-1)}`));
@@ -58,7 +85,7 @@ export default function Chat() {
 
   return (
     <div className="chat-page">
-      <div className="chat-scroll" ref={scrollRef}>
+      <div className="chat-scroll" ref={scrollRef} onScroll={handleScroll}>
         {isEmpty ? (
           <div className="empty-state">
             <div className="empty-icon-wrap">
@@ -81,7 +108,7 @@ export default function Chat() {
             </div>
           </div>
         ) : (
-          <div className="chat-container">
+          <div className="chat-container" ref={contentRef}>
             {state.messages.slice(0, -1).map((m) =>
               m.role === 'assistant' ? (
                 <AssistantMessage key={m.id} text={m.text} />
