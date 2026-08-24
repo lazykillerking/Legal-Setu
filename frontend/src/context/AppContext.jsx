@@ -103,6 +103,7 @@ const STRINGS = {
       darkMode: 'Dark mode',
       lightMode: 'Light mode',
       signOut: 'Sign out',
+      signIn: 'Sign In',
     },
     orchestrator: {
       title: 'Legal Orchestrator',
