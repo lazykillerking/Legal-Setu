@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import LegalIcon from '../components/LegalIcon.jsx';
 import { useApp } from '../context/AppContext.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
+import { useConversation } from '../context/ConversationContext.jsx';
 import { supabase } from '../services/supabaseClient.js';
 
 function groupLabel(timestamp) {
@@ -17,6 +19,8 @@ function groupLabel(timestamp) {
 export default function History() {
   const { t } = useApp();
   const { user } = useAuth();
+  const { loadConversation } = useConversation();
+  const navigate = useNavigate();
   const [items, setItems] = useState([]);
   const [selected, setSelected] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -27,7 +31,7 @@ export default function History() {
       if (!supabase || !user) { if (active) { setItems([]); setLoading(false); } return; }
       const { data } = await supabase
         .from('legal_conversations')
-        .select('id, title, created_at, legal_messages(role, content, created_at)')
+        .select('id, session_id, title, created_at, legal_messages(role, content, created_at)')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
       if (active) { setItems(data ?? []); setLoading(false); }
@@ -35,6 +39,14 @@ export default function History() {
     load();
     return () => { active = false; };
   }, [user]);
+
+  function handleContinue(item) {
+    const messages = [...(item.legal_messages ?? [])]
+      .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+      .map((m, index) => ({ id: `h_${item.id}_${index}`, role: m.role, text: m.content }));
+    loadConversation(item.session_id, messages);
+    navigate('/chat');
+  }
 
   const groups = items.reduce((result, item) => {
     const label = groupLabel(item.created_at);
@@ -56,6 +68,13 @@ export default function History() {
         <div><div className="history-item-title">{item.title || t('history.conversation')}</div><div className="history-item-sub">{new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(item.created_at))}</div></div>
       </button>)}
     </div>)}
-    {selected && <div className="card history-detail-card"><div className="uppercase-label" style={{ marginBottom: 8 }}>{t('history.conversation')}</div><h2 style={{ margin: '0 0 10px', fontSize: 16 }}>{selected.title}</h2>{selected.legal_messages?.map((message) => <p key={`${message.role}-${message.created_at}`} style={{ fontSize: 13.5, color: 'var(--text-secondary)' }}><strong>{message.role === 'user' ? 'You' : 'Legal Setu'}:</strong> {message.content}</p>)}</div>}
+    {selected && <div className="card history-detail-card">
+      <div className="uppercase-label" style={{ marginBottom: 8 }}>{t('history.conversation')}</div>
+      <h2 style={{ margin: '0 0 10px', fontSize: 16 }}>{selected.title}</h2>
+      {selected.legal_messages?.map((message) => <p key={`${message.role}-${message.created_at}`} style={{ fontSize: 13.5, color: 'var(--text-secondary)' }}><strong>{message.role === 'user' ? 'You' : 'Legal Setu'}:</strong> {message.content}</p>)}
+      <button type="button" className="btn btn-primary" style={{ marginTop: 12 }} onClick={() => handleContinue(selected)}>
+        {t('history.continue') || 'Continue conversation'}
+      </button>
+    </div>}
   </div>;
 }
