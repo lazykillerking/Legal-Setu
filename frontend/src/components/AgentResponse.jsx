@@ -1,5 +1,6 @@
 import LegalIcon from './LegalIcon.jsx';
 import { useApp } from '../context/AppContext.jsx';
+import { useTypewriterSegments } from '../hooks/useTypewriter.js';
 
 function InlineText({ text }) {
   return text.split(/(\*\*[^*]+\*\*)/g).map((part, index) =>
@@ -43,6 +44,12 @@ export default function AgentResponse({ response, onAction }) {
   const { t } = useApp();
   const { agent, lead, steps, note, actions } = response;
 
+  const segments = [lead, ...steps, note];
+  const { revealed, done } = useTypewriterSegments(segments, 8);
+  const [revealedLead, ...revealedRest] = revealed;
+  const revealedSteps = revealedRest.slice(0, steps.length);
+  const revealedNote = revealedRest[steps.length] || '';
+
   return (
     <div className="response-card">
       <div className="response-header">
@@ -52,33 +59,37 @@ export default function AgentResponse({ response, onAction }) {
         <span className="response-agent-name">{agent.name}</span>
       </div>
 
-      <FormattedResponse text={lead} />
+      <FormattedResponse text={revealedLead} />
 
       <ol className="response-list">
-        {steps.map((step) => (
-          <li key={step}>{step}</li>
+        {steps.map((step, index) => (
+          revealedSteps[index] ? <li key={step}>{revealedSteps[index]}</li> : null
         ))}
       </ol>
 
-      <p className="response-note">{note}</p>
+      {revealedNote && <p className="response-note">{revealedNote}</p>}
 
-      <div className="response-actions">
-        {actions.map((action) => (
-          <button
-            key={action}
-            type="button"
-            className="btn"
-            onClick={() => onAction && onAction(action)}
-          >
-            {action}
-          </button>
-        ))}
-      </div>
+      {done && (
+        <>
+          <div className="response-actions">
+            {actions.map((action) => (
+              <button
+                key={action}
+                type="button"
+                className="btn"
+                onClick={() => onAction && onAction(action)}
+              >
+                {action}
+              </button>
+            ))}
+          </div>
 
-      <div className="response-disclaimer">
-        <LegalIcon name="alertTriangle" size={15} strokeWidth={2} />
-        {t('agentResponse.disclaimer')}
-      </div>
+          <div className="response-disclaimer">
+            <LegalIcon name="alertTriangle" size={15} strokeWidth={2} />
+            {t('agentResponse.disclaimer')}
+          </div>
+        </>
+      )}
     </div>
   );
 }
