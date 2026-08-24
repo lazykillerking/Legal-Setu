@@ -31,6 +31,7 @@ export default function Login() {
   const { user, loading, authError, clearAuthError, signInWithMagicLink, signInWithGoogle } =
     useAuth();
   const { t } = useApp();
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [googleSubmitting, setGoogleSubmitting] = useState(false);
@@ -45,9 +46,9 @@ export default function Login() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    if (!email.trim() || submitting) return;
+    if (!name.trim() || !email.trim() || submitting) return;
     setSubmitting(true);
-    const { error } = await signInWithMagicLink(email.trim());
+    const { error } = await signInWithMagicLink(email.trim(), name.trim());
     setSubmitting(false);
     if (!error) setSent(true);
   }
@@ -79,7 +80,9 @@ export default function Login() {
         {sent ? (
           <div className="login-success" role="status">
             <LegalIcon name="send" size={15} strokeWidth={2} />
-            {t('login.magicSentPrefix')} <strong>{email}</strong>{t('login.magicSentSuffix')}
+            <span className="login-success-copy">
+              {t('login.magicSentPrefix')} <strong>{email}</strong>{t('login.magicSentSuffix')}
+            </span>
           </div>
         ) : (
           <>
@@ -98,7 +101,21 @@ export default function Login() {
             </div>
 
             <form className="login-form" onSubmit={handleSubmit}>
+              <label className="visually-hidden" htmlFor="login-name">Your name</label>
               <input
+                id="login-name"
+                type="text"
+                className="login-input"
+                placeholder={t('login.namePlaceholder')}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                autoComplete="name"
+                required
+                disabled={submitting || loading}
+              />
+              <label className="visually-hidden" htmlFor="login-email">Email address</label>
+              <input
+                id="login-email"
                 type="email"
                 className="login-input"
                 placeholder={t('login.emailPlaceholder')}
@@ -111,7 +128,7 @@ export default function Login() {
               <button
                 type="submit"
                 className="primary-btn"
-                disabled={submitting || loading || !email.trim()}
+                disabled={submitting || loading || !name.trim() || !email.trim()}
               >
                 {submitting ? t('login.sending') : t('login.sendLink')}
               </button>

@@ -20,6 +20,13 @@ body {
   overflow-x: hidden;
 }
 
+[data-theme="dark"] body {
+  background:
+    radial-gradient(900px 460px at 50% -170px, rgba(43, 92, 176, 0.18), transparent 68%),
+    radial-gradient(680px 420px at 100% 100%, rgba(30, 73, 138, 0.08), transparent 70%),
+    var(--background);
+}
+
 #root {
   min-height: 100vh;
   display: flex;
@@ -30,6 +37,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  isolation: isolate;
 }
 
 .app-main {
@@ -46,6 +54,11 @@ a {
 button {
   font-family: inherit;
   cursor: pointer;
+}
+
+button:focus-visible, a:focus-visible, textarea:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
 }
 
 input, textarea, select {

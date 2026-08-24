@@ -46,7 +46,7 @@ export default function UserMenu() {
         {initials}
       </button>
       {open && (
-        <div className="dropdown-menu" role="menu">
+        <div className="user-dropdown-menu" role="menu">
           <div className="user-menu-header">
             <div className="user-menu-name">{displayName}</div>
             <div className="user-menu-email">{email}</div>

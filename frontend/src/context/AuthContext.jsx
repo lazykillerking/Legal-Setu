@@ -3,6 +3,15 @@ import { supabase, supabaseConfigured } from '../services/supabaseClient.js';
 
 const AuthContext = createContext(null);
 
+async function saveUserProfile(user) {
+  if (!supabase || !user) return;
+  const fullName = user.user_metadata?.full_name || user.user_metadata?.name || '';
+  await supabase.from('user_profiles').upsert(
+    { id: user.id, email: user.email ?? '', full_name: fullName },
+    { onConflict: 'id' }
+  );
+}
+
 function friendlyAuthError(err) {
   if (!err) return null;
   const msg = err.message || String(err);
@@ -36,11 +45,13 @@ export function AuthProvider({ children }) {
       if (!active) return;
       if (error) setAuthError(friendlyAuthError(error));
       setSession(data?.session ?? null);
+      if (data?.session?.user) saveUserProfile(data.session.user);
       setLoading(false);
     });
 
     const { data: listener } = supabase.auth.onAuthStateChange((_event, nextSession) => {
       setSession(nextSession);
+      if (nextSession?.user) saveUserProfile(nextSession.user);
       setLoading(false);
     });
 
@@ -53,7 +64,7 @@ export function AuthProvider({ children }) {
   // Sends a magic-link email; the user finishes sign-in by clicking it, which
   // redirects back here with a session already in the URL (handled by the
   // onAuthStateChange listener above).
-  const signInWithMagicLink = useCallback(async (email) => {
+  const signInWithMagicLink = useCallback(async (email, fullName) => {
     if (!supabase) {
       setAuthError('App is missing Supabase configuration. Sign-in is unavailable.');
       return { error: true };
@@ -66,6 +77,7 @@ export function AuthProvider({ children }) {
         // without hardcoding a URL — must also be added to the Supabase
         // redirect allow-list (see setup steps).
         emailRedirectTo: window.location.origin,
+        data: { full_name: fullName },
       },
     });
     if (error) setAuthError(friendlyAuthError(error));

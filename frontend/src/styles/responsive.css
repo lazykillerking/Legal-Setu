@@ -76,4 +76,8 @@
   .chat-input-wrap {
     padding: 10px 12px 14px;
   }
+
+  .chat-input-box {
+    border-radius: 16px;
+  }
 }

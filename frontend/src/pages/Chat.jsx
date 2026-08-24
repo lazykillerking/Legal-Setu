@@ -11,7 +11,11 @@ import HandoffCard from '../components/HandoffCard.jsx';
 import AgentResponse from '../components/AgentResponse.jsx';
 import LegalIcon from '../components/LegalIcon.jsx';
 
-const SUGGESTION_IDS = ['suggestion1', 'suggestion2', 'suggestion3'];
+const SUGGESTIONS = [
+  { id: 'suggestion1', icon: 'contract' },
+  { id: 'suggestion2', icon: 'shield' },
+  { id: 'suggestion3', icon: 'fileText' },
+];
 
 export default function Chat() {
   const { state, submitQuery, approve, deny, retry } = useConversation();
@@ -62,13 +66,14 @@ export default function Chat() {
             <h1 className="empty-heading">{t('chat.heading')}</h1>
             <p className="empty-subheading">{t('chat.subheading')}</p>
             <div className="suggestion-row">
-              {SUGGESTION_IDS.map((id) => (
+              {SUGGESTIONS.map(({ id, icon }) => (
                 <button
                   key={id}
                   type="button"
                   className="suggestion-chip"
                   onClick={() => handleSuggestionClick(id)}
                 >
+                  <LegalIcon name={icon} size={15} strokeWidth={1.8} className="suggestion-icon" />
                   {t(`chat.${id}`)}
                 </button>
               ))}
