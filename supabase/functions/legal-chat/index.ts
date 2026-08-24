@@ -72,10 +72,14 @@ Deno.serve(async (request) => {
 
     const lyzrResponse = await fetch(apiUrl, {
       method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+      headers: { "Content-Type": "application/json", "x-api-key": apiKey },
       body: JSON.stringify({ user_id: userId, agent_id: agentId, session_id: sessionId, message }),
     });
-    if (!lyzrResponse.ok) throw new Error(`Lyzr request failed with status ${lyzrResponse.status}`);
+    if (!lyzrResponse.ok) {
+      const errorBody = await lyzrResponse.text();
+      console.error("Lyzr error body:", errorBody);
+      throw new Error(`Lyzr request failed with status ${lyzrResponse.status}`);
+    }
     const response = responseText(await lyzrResponse.json());
     if (!response) throw new Error("Lyzr response did not contain text.");
 
