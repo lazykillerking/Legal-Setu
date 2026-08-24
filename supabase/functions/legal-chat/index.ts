@@ -63,9 +63,15 @@ Deno.serve(async (request) => {
 
   try {
     if (database) {
-      const { data: conversation, error: conversationError } = await database.from("legal_conversations").upsert({ session_id: sessionId, user_id: userId }, { onConflict: "session_id" }).select("id").single();
-      if (conversationError) throw conversationError;
-      conversationId = conversation.id;
+      const { data: existing } = await database.from("legal_conversations").select("id").eq("session_id", sessionId).maybeSingle();
+      if (existing) {
+        conversationId = existing.id;
+      } else {
+        const title = message.length > 60 ? `${message.slice(0, 57).trim()}…` : message;
+        const { data: conversation, error: conversationError } = await database.from("legal_conversations").insert({ session_id: sessionId, user_id: userId, title }).select("id").single();
+        if (conversationError) throw conversationError;
+        conversationId = conversation.id;
+      }
       await database.from("legal_messages").insert({ conversation_id: conversationId, role: "user", content: message });
       await database.from("legal_agent_runs").insert({ conversation_id: conversationId, agent_name: "Legal Orchestrator", agent_id: agentId, status: "started" });
     }

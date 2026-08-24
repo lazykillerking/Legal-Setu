@@ -16,13 +16,21 @@ function groupLabel(timestamp) {
   return new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric' }).format(date);
 }
 
+function fallbackTitle(item) {
+  const firstUserMessage = [...(item.legal_messages ?? [])]
+    .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+    .find((m) => m.role === 'user');
+  if (!firstUserMessage) return null;
+  const text = firstUserMessage.content.trim();
+  return text.length > 60 ? `${text.slice(0, 57).trim()}…` : text;
+}
+
 export default function History() {
   const { t } = useApp();
   const { user } = useAuth();
   const { loadConversation } = useConversation();
   const navigate = useNavigate();
   const [items, setItems] = useState([]);
-  const [selected, setSelected] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -63,18 +71,10 @@ export default function History() {
     {!loading && !groups.length && <div className="card" style={{ padding: 24, textAlign: 'center', color: 'var(--text-muted)' }}>{t('history.empty')}</div>}
     {groups.map((group) => <div className="history-group" key={group.label}>
       <div className="history-group-label">{group.label}</div>
-      {group.items.map((item) => <button key={item.id} type="button" className="history-item" onClick={() => setSelected(item)}>
+      {group.items.map((item) => <button key={item.id} type="button" className="history-item" onClick={() => handleContinue(item)}>
         <div className="history-item-icon"><LegalIcon name="fileText" size={18} strokeWidth={1.8} /></div>
-        <div><div className="history-item-title">{item.title || t('history.conversation')}</div><div className="history-item-sub">{new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(item.created_at))}</div></div>
+        <div><div className="history-item-title">{item.title || fallbackTitle(item) || t('history.conversation')}</div><div className="history-item-sub">{new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(item.created_at))}</div></div>
       </button>)}
     </div>)}
-    {selected && <div className="card history-detail-card">
-      <div className="uppercase-label" style={{ marginBottom: 8 }}>{t('history.conversation')}</div>
-      <h2 style={{ margin: '0 0 10px', fontSize: 16 }}>{selected.title}</h2>
-      {selected.legal_messages?.map((message) => <p key={`${message.role}-${message.created_at}`} style={{ fontSize: 13.5, color: 'var(--text-secondary)' }}><strong>{message.role === 'user' ? 'You' : 'Legal Setu'}:</strong> {message.content}</p>)}
-      <button type="button" className="btn btn-primary" style={{ marginTop: 12 }} onClick={() => handleContinue(selected)}>
-        {t('history.continue') || 'Continue conversation'}
-      </button>
-    </div>}
   </div>;
 }
