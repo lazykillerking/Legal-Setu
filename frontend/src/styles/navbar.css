@@ -211,6 +211,10 @@
   color: var(--accent);
 }
 
+[dir="rtl"][data-theme="dark"] .theme-toggle-thumb {
+  transform: translateX(-20px);
+}
+
 /* User menu */
 .user-menu {
   position: relative;
