@@ -24,6 +24,8 @@ function reducer(state, action) {
   switch (action.type) {
     case 'RESET':
       return { ...initialState };
+    case 'LOAD_CONVERSATION':
+      return { ...initialState, messages: action.messages, status: 'loaded' };
     case 'SUBMIT_QUERY':
       return {
         ...initialState,
@@ -68,6 +70,13 @@ export function ConversationProvider({ children }) {
     dispatch({ type: 'RESET' });
   }, []);
 
+  /** Resumes a past conversation: switches the active session so new
+   * messages append to it, and seeds the transcript for display. */
+  const loadConversation = useCallback((sessionId, messages) => {
+    api.resumeSession(sessionId);
+    dispatch({ type: 'LOAD_CONVERSATION', messages });
+  }, []);
+
   const submitQuery = useCallback(async (text, file) => {
     const id = `m_${Date.now()}`;
     dispatch({ type: 'SUBMIT_QUERY', id, text, file });
@@ -103,7 +112,7 @@ export function ConversationProvider({ children }) {
 
   return (
     <ConversationContext.Provider
-      value={{ state, submitQuery, approve, deny, retry, resetConversation }}
+      value={{ state, submitQuery, approve, deny, retry, resetConversation, loadConversation }}
     >
       {children}
     </ConversationContext.Provider>

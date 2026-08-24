@@ -3,6 +3,7 @@ import { useConversation } from '../context/ConversationContext.jsx';
 import { useApp } from '../context/AppContext.jsx';
 import ChatInput from '../components/ChatInput.jsx';
 import UserMessage from '../components/UserMessage.jsx';
+import AssistantMessage from '../components/AssistantMessage.jsx';
 import OrchestratorCard from '../components/OrchestratorCard.jsx';
 import DomainStatus from '../components/DomainStatus.jsx';
 import AgentRecommendation from '../components/AgentRecommendation.jsx';
@@ -81,10 +82,18 @@ export default function Chat() {
           </div>
         ) : (
           <div className="chat-container">
-            {state.messages.slice(0, -1).map((m) => (
-              <UserMessage key={m.id} text={m.text} file={m.file} />
-            ))}
-            <UserMessage text={message.text} file={message.file} />
+            {state.messages.slice(0, -1).map((m) =>
+              m.role === 'assistant' ? (
+                <AssistantMessage key={m.id} text={m.text} />
+              ) : (
+                <UserMessage key={m.id} text={m.text} file={m.file} />
+              )
+            )}
+            {message.role === 'assistant' ? (
+              <AssistantMessage text={message.text} />
+            ) : (
+              <UserMessage text={message.text} file={message.file} />
+            )}
 
             {showOrchestratorAnalyzing && <OrchestratorCard />}
 
