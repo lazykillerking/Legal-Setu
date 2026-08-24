@@ -108,8 +108,10 @@
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
-  min-width: 190px;
-  max-height: 280px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(190px, 1fr));
+  min-width: 400px;
+  max-height: calc(100vh - 84px);
   overflow-y: auto;
   background: var(--surface);
   border: 1px solid var(--border);
@@ -156,6 +158,19 @@
   background: transparent;
   border: none;
   text-align: left;
+}
+
+.dropdown-item:lang(ur),
+.dropdown-item:lang(ks),
+.dropdown-item:lang(sd) {
+  font-family: 'Nirmala UI', 'Noto Naskh Arabic', system-ui, sans-serif;
+}
+
+@media (max-width: 560px) {
+  .dropdown-menu {
+    grid-template-columns: 1fr;
+    min-width: min(280px, calc(100vw - 24px));
+  }
 }
 
 .dropdown-item:hover {

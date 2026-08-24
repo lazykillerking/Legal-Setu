@@ -43,6 +43,7 @@ export default function LanguageSelector() {
               key={lang.code}
               type="button"
               role="option"
+              lang={lang.code}
               aria-selected={lang.code === language}
               className={`dropdown-item${lang.code === language ? ' selected' : ''}`}
               onClick={() => {

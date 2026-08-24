@@ -21,7 +21,7 @@ export const LANGUAGES = [
   { code: 'as', label: 'অসমীয়া' },
   { code: 'mai', label: 'मैथिली' },
   { code: 'sa', label: 'संस्कृतम्' },
-  { code: 'ks', label: 'कॉशुर' },
+  { code: 'ks', label: 'کٲشُر' },
   { code: 'ne', label: 'नेपाली' },
   { code: 'kok', label: 'कोंकणी' },
   { code: 'sd', label: 'سنڌي' },
