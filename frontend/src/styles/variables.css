@@ -16,7 +16,7 @@
   --ai-background: #F1F5FF;
   --ai-border: #C9D8F5;
 
-  --font-ui: 'Inter', 'Manrope', system-ui, -apple-system, sans-serif;
+  --font-ui: 'Inter', 'Manrope', 'Noto Sans Ol Chiki', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace;
 
   --radius-sm: 8px;
