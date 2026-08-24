@@ -46,7 +46,7 @@ const ChatInput = forwardRef(function ChatInput(
 
   function handleSend() {
     if (disabled || !value.trim()) return;
-    onSend({ text: value.trim(), file: file ? { name: file.name } : null });
+    onSend({ text: value.trim(), file });
     removeFile();
   }
 

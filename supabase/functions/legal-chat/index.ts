@@ -6,7 +6,7 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 const SAFE_ERROR = "Unable to process your legal query right now.";
-const MAX_MESSAGE_LENGTH = 10_000;
+const MAX_MESSAGE_LENGTH = 50_000;
 
 type LegalChatRequest = { message?: unknown; sessionId?: unknown; userId?: unknown };
 

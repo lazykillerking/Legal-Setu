@@ -3,6 +3,7 @@ import * as api from '../services/legalSetuApi.js';
 import { AGENTS } from '../data/agents.js';
 import { supabase } from '../services/supabaseClient.js';
 import { useAuth } from './AuthContext.jsx';
+import { extractPdfText } from '../utils/pdfText.js';
 
 // ---- Orchestration state machine -------------------------------------------------
 // States: idle -> analyzing -> domainIdentified -> agentRecommended -> awaitingApproval
@@ -84,7 +85,20 @@ export function ConversationProvider({ children }) {
     }
     try {
       dispatch({ type: 'SET_STATUS', status: 'analyzing' });
-      const { response } = await api.submitQuery(text);
+
+      let outgoingMessage = text;
+      if (file && (file.type === 'application/pdf' || file.name?.toLowerCase().endsWith('.pdf'))) {
+        try {
+          const documentText = await extractPdfText(file);
+          if (documentText) {
+            outgoingMessage = `${text}\n\n--- Attached document: ${file.name} ---\n${documentText}`;
+          }
+        } catch (err) {
+          console.error('Failed to read PDF file.', err);
+        }
+      }
+
+      const { response } = await api.submitQuery(outgoingMessage);
       if (conversationId) await supabase.from('legal_messages').insert({ conversation_id: conversationId, role: 'assistant', content: response });
       dispatch({ type: 'RESPONSE_READY', response: { agent: AGENTS.legalQuery, lead: response, steps: [], note: '', actions: [] } });
     } catch (err) {
