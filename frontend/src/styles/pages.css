@@ -353,6 +353,21 @@
   color: var(--success);
 }
 
+.login-success svg {
+  flex: 0 0 auto;
+  margin-top: 2px;
+}
+
+.login-success-copy {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.login-success-copy strong {
+  color: inherit;
+  font-weight: 700;
+}
+
 .login-form {
   display: flex;
   flex-direction: column;

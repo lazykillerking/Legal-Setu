@@ -80,7 +80,9 @@ export default function Login() {
         {sent ? (
           <div className="login-success" role="status">
             <LegalIcon name="send" size={15} strokeWidth={2} />
-            {t('login.magicSentPrefix')} <strong>{email}</strong>{t('login.magicSentSuffix')}
+            <span className="login-success-copy">
+              {t('login.magicSentPrefix')} <strong>{email}</strong>{t('login.magicSentSuffix')}
+            </span>
           </div>
         ) : (
           <>
