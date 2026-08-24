@@ -246,7 +246,7 @@
 .chat-input-hint {
   font-size: 11px;
   color: var(--text-muted);
-  text-align: right;
+  text-align: end;
   padding: 4px 8px 0;
 }
 
