@@ -53,7 +53,7 @@ export function AuthProvider({ children }) {
   // Sends a magic-link email; the user finishes sign-in by clicking it, which
   // redirects back here with a session already in the URL (handled by the
   // onAuthStateChange listener above).
-  const signInWithMagicLink = useCallback(async (email) => {
+  const signInWithMagicLink = useCallback(async (email, name) => {
     if (!supabase) {
       setAuthError('App is missing Supabase configuration. Sign-in is unavailable.');
       return { error: true };
@@ -66,6 +66,7 @@ export function AuthProvider({ children }) {
         // without hardcoding a URL — must also be added to the Supabase
         // redirect allow-list (see setup steps).
         emailRedirectTo: window.location.origin,
+        data: { full_name: name },
       },
     });
     if (error) setAuthError(friendlyAuthError(error));
