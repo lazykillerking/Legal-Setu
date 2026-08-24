@@ -1,22 +1,49 @@
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import { useAuth } from './AuthContext.jsx';
 
 const AppContext = createContext(null);
 
+// English + all languages listed in the Eighth Schedule of the Constitution of India.
+// `label` is the language's own native name (not an English translation of it).
 export const LANGUAGES = [
   { code: 'en', label: 'English' },
-  { code: 'hi', label: 'Hindi' },
-  { code: 'mr', label: 'Marathi' },
-  { code: 'bn', label: 'Bengali' },
-  { code: 'ta', label: 'Tamil' },
-  { code: 'te', label: 'Telugu' },
-  { code: 'kn', label: 'Kannada' },
-  { code: 'gu', label: 'Gujarati' },
+  { code: 'hi', label: 'हिन्दी' },
+  { code: 'bn', label: 'বাংলা' },
+  { code: 'mr', label: 'मराठी' },
+  { code: 'te', label: 'తెలుగు' },
+  { code: 'ta', label: 'தமிழ்' },
+  { code: 'gu', label: 'ગુજરાતી' },
+  { code: 'ur', label: 'اردو' },
+  { code: 'kn', label: 'ಕನ್ನಡ' },
+  { code: 'or', label: 'ଓଡ଼ିଆ' },
+  { code: 'pa', label: 'ਪੰਜਾਬੀ' },
+  { code: 'ml', label: 'മലയാളം' },
+  { code: 'as', label: 'অসমীয়া' },
+  { code: 'mai', label: 'मैथिली' },
+  { code: 'sa', label: 'संस्कृतम्' },
+  { code: 'ks', label: 'कॉशुर' },
+  { code: 'ne', label: 'नेपाली' },
+  { code: 'kok', label: 'कोंकणी' },
+  { code: 'sd', label: 'سنڌي' },
+  { code: 'doi', label: 'डोगरी' },
+  { code: 'mni', label: 'ꯃꯤꯇꯩꯂꯣꯟ' },
+  { code: 'sat', label: 'ᱥᱟᱱᱛᱟᱲᱤ' },
+  { code: 'brx', label: 'बड़ो' },
 ];
 
-// Site-wide UI copy. Romanized (Latin-script) translations for the demo --
-// not proofread by native speakers, and legal/document pages (Privacy
-// Policy, Terms of Service, agent legal disclaimers) are intentionally left
-// in English since mistranslated legal text is worse than none.
+// Site-wide UI copy, keyed by dot-path (e.g. "chat.heading"). t() falls back
+// to English for any key missing in the active language, so partial
+// coverage degrades gracefully instead of breaking.
+//
+// The 8 languages below (en/hi/mr/bn/ta/te/kn/gu) have full site coverage:
+// core strings (nav.newChat, chat.heading/subheading/placeholder) are in
+// native script, translated by a previous PR; everything else here is a
+// romanized (Latin-script) demo translation, not proofread by a native
+// speaker. The remaining 14 Eighth Schedule languages only have those core
+// native-script strings -- everything else falls back to English.
+// Legal document pages (Privacy Policy, Terms of Service) and the agent
+// descriptions in data/agents.js are intentionally left in English:
+// mistranslated legal text is worse than none.
 const STRINGS = {
   en: {
     nav: { newChat: 'New Chat', history: 'History' },
@@ -133,11 +160,11 @@ const STRINGS = {
     },
   },
   hi: {
-    nav: { newChat: 'Nayi Baatcheet', history: 'Itihaas' },
+    nav: { newChat: 'नई बातचीत', history: 'Itihaas' },
     chat: {
-      heading: 'Aaj main aapke kanooni sawaal mein kaise madad kar sakta hoon?',
-      subheading: 'Saral shabdon mein, apni bhasha mein poochein.',
-      placeholder: 'Apni kanooni samasya bataayein...',
+      heading: 'आज मैं आपके कानूनी प्रश्न में कैसे मदद कर सकता हूँ?',
+      subheading: 'सरल भाषा में, अपनी पसंदीदा भाषा में पूछें।',
+      placeholder: 'अपनी कानूनी समस्या बताएं...',
       suggestion1: 'Ek contract review karein',
       suggestion2: 'Apne kirayedaar adhikaar jaanein',
       suggestion3: 'Kanooni notice draft karein',
@@ -247,11 +274,11 @@ const STRINGS = {
     },
   },
   mr: {
-    nav: { newChat: 'Naveen Samvaad', history: 'Itihaas' },
+    nav: { newChat: 'नवीन संभाषण', history: 'Itihaas' },
     chat: {
-      heading: 'Aaj mi tumchya kayadeshir prashnaat kashi madat karu shakto?',
-      subheading: 'Sopya bhashet vichara.',
-      placeholder: 'Tumchi kayadeshir samasya liha...',
+      heading: 'आज मी तुमच्या कायदेशीर प्रश्नात कशी मदत करू शकतो?',
+      subheading: 'सोप्या भाषेत, तुम्हाला सोयीस्कर असलेल्या भाषेत विचारा.',
+      placeholder: 'तुमची कायदेशीर समस्या सांगा...',
       suggestion1: 'Contract review kara',
       suggestion2: 'Bhadekaru hakk jaana',
       suggestion3: 'Kayadeshir notice draft kara',
@@ -281,11 +308,11 @@ const STRINGS = {
       appearance: 'Deekhava',
       appearanceDesc: 'Legal Setu tumchya device var kasa disel te nivda.',
       theme: 'Theme',
-      themeDesc: 'Light kinva dark mode, संपूर्ण app madhe sync hoto.',
+      themeDesc: 'Light kinva dark mode, sampurna app madhe sync hoto.',
       light: 'Light',
       dark: 'Dark',
       language: 'Bhasha',
-      languageNote: 'Ya demo sathi संपूर्ण site cha text bhashantarit kela aahe.',
+      languageNote: 'Ya demo sathi sampurna site cha text bhashantarit kela aahe.',
       interfaceLanguage: 'Interface bhasha',
       profile: 'Profile',
       displayName: 'Display naav',
@@ -357,15 +384,15 @@ const STRINGS = {
       emailPlaceholder: 'tumhi@example.com',
       sending: 'Link pathavat aahot…',
       sendLink: 'Magic link pathava',
-      terms: 'Continue karun tumhi mान्य karta ki ha ek hackathon prototype aahe, professional kayadeshir sallyacha paryay nahi.',
+      terms: 'Continue karun tumhi manya karta ki ha ek hackathon prototype aahe, professional kayadeshir sallyacha paryay nahi.',
     },
   },
   bn: {
-    nav: { newChat: 'Notun Alaap', history: 'Itihash' },
+    nav: { newChat: 'নতুন আলাপ', history: 'Itihash' },
     chat: {
-      heading: 'Aaj ami apnar ainoto proshne kivabe sahajyo korte pari?',
-      subheading: 'Sohoj bhashay jiggasa korun.',
-      placeholder: 'Apnar aini somossa bornona korun...',
+      heading: 'আজ আমি আপনার আইনি প্রশ্নে কীভাবে সাহায্য করতে পারি?',
+      subheading: 'সহজ ভাষায়, আপনার পছন্দের ভাষায় জিজ্ঞাসা করুন।',
+      placeholder: 'আপনার আইনি সমস্যা বর্ণনা করুন...',
       suggestion1: 'Ekti chukti review korun',
       suggestion2: 'Bhara-tir adhikar janun',
       suggestion3: 'Aini notice draft korun',
@@ -475,11 +502,11 @@ const STRINGS = {
     },
   },
   ta: {
-    nav: { newChat: 'Puthiya Uraiyaadal', history: 'Varalaru' },
+    nav: { newChat: 'புதிய உரையாடல்', history: 'Varalaru' },
     chat: {
-      heading: 'Indru ungal sattak kelvikku naan eppadi udhava mudiyum?',
-      subheading: 'Elimaiyaana mozhiyil kelungal.',
-      placeholder: 'Ungal satta piraccinaiyai vivarikkavum...',
+      heading: 'இன்று உங்கள் சட்டப் பிரச்சினைக்கு நான் எப்படி உதவ முடியும்?',
+      subheading: 'எளிய மொழியில், நீங்கள் வசதியாக உணரும் மொழியில் கேளுங்கள்.',
+      placeholder: 'உங்கள் சட்டப் பிரச்சினையை விவரிக்கவும்...',
       suggestion1: 'Or ozhungkumurai review seyyavum',
       suggestion2: 'En kudiyiruppu urimaigalai ariyavum',
       suggestion3: 'Sattak arivippu vadivamai',
@@ -519,8 +546,8 @@ const STRINGS = {
       displayName: 'Display peyar',
       conversation: 'Uraiyaadal',
       clearHistory: 'Varalaru azhi',
-      clearedMsg: 'Uraiyaadal varalaru azhikkappattadhu.',
       clearDesc: 'Anaithu saved uraiyaadalgalaium neekavum.',
+      clearedMsg: 'Uraiyaadal varalaru azhikkappattadhu.',
       privacy: 'Privacy',
       shareData: 'Pathilgalai mecchapaduthha anonymized data pagirvum',
       usageAnalytics: 'Usage analytics',
@@ -562,7 +589,7 @@ const STRINGS = {
     approval: { allow: 'Anumathi', deny: 'Niraakarikka' },
     home: {
       title: 'Legal Setu',
-      desc: 'Ungal sattak kelviyai elimaiyaana mozhiyil kelungal. Legal Orchestrator sariyaana thuraiyai kandarithu oru nipunar agent-ai pariyndhuraikkum — avargalai serppadha endru neengal muடிவu seiyalaam.',
+      desc: 'Ungal sattak kelviyai elimaiyaana mozhiyil kelungal. Legal Orchestrator sariyaana thuraiyai kandarithu oru nipunar agent-ai pariyndhuraikkum — avargalai serppadha endru neengal mudivu seiyalaam.',
       start: 'Uraiyaadalai thodangavum',
     },
     profile: {
@@ -589,11 +616,11 @@ const STRINGS = {
     },
   },
   te: {
-    nav: { newChat: 'Kotha Chat', history: 'Charitra' },
+    nav: { newChat: 'కొత్త చాట్', history: 'Charitra' },
     chat: {
-      heading: 'Ee roju mee chatta prashnaku nenu ela sahayam cheyagalanu?',
-      subheading: 'Saralamaina bhashalo adagandi.',
-      placeholder: 'Mee chatta samasyanu vivarinchandi...',
+      heading: 'ఈ రోజు మీ న్యాయపరమైన ప్రశ్నకు నేను ఎలా సహాయం చేయగలను?',
+      subheading: 'సరళమైన భాషలో, మీకు అనుకూలమైన భాషలో అడగండి.',
+      placeholder: 'మీ న్యాయ సమస్యను వివరించండి...',
       suggestion1: 'Ottu review cheyandi',
       suggestion2: 'Naa bhadaka hakkulu telusukondi',
       suggestion3: 'Chatta notice draft cheyandi',
@@ -601,33 +628,33 @@ const STRINGS = {
       suggestionText2: 'Naa illu yajamani security deposit thirigi ivvadaniki nirakaristhunnaru.',
       suggestionText3: 'Security deposit gurinchi illu yajamaniki chatta notice draft cheyali.',
       approvedSuffix: 'user dwara approve chesaru',
-      approvedBody: 'User sూchinchina specialist ni approve chesaru. Contextual handoff sిద్ధం avutundi...',
-      deniedTitle: 'Agent request తిరస్కరించారు',
-      tryDifferent: 'Vేre specialist try cheyandi',
-      responseReadySuffix: 'jaవాbు sిద్ధంga undi',
-      handoffBody: 'Mee specialist handoff samayamlo share chesina context aadhaarంga jaవాbు siద్ధం chesaru.',
-      errorBody: 'Aa step complete కాలేదు. Dayachesi malli try cheyandi.',
+      approvedBody: 'User suchinchina specialist ni approve chesaru. Contextual handoff siddham avutundi...',
+      deniedTitle: 'Agent request tiraskarincharu',
+      tryDifferent: 'Vere specialist try cheyandi',
+      responseReadySuffix: 'jawabu siddhamga undi',
+      handoffBody: 'Mee specialist handoff samayamlo share chesina context aadharamga jawabu siddham chesaru.',
+      errorBody: 'Aa step complete kaledu. Dayachesi malli try cheyandi.',
       tryAgain: 'Malli Try Cheyandi',
-      inputHint: 'Pంపడాniki Enter · Kotha line kosam Shift + Enter',
+      inputHint: 'Pampadaniki Enter · Kotha line kosam Shift + Enter',
     },
     history: {
       title: 'Chat Charitra',
-      subtitle: 'Legal Orchestrator తో past chats ni malli chudandi.',
+      subtitle: 'Legal Orchestrator to past chats ni malli chudandi.',
       empty: 'Inka e chat charitra ledu.',
       conversation: 'Chat',
-      staticDemo: 'Idi oka static demo view — poorthi session kosam main chat ki వెళ్ళండి.',
+      staticDemo: 'Idi oka static demo view — poorthi session kosam main chat ki vellandi.',
     },
     settings: {
       title: 'Settings',
       subtitle: 'Mee appearance, bhasha, mariyu chat data ni manage cheyandi.',
       appearance: 'Appearance',
-      appearanceDesc: 'Legal Setu mee device lo ela కనిపిస్తుందో ఎంచుకోండి.',
+      appearanceDesc: 'Legal Setu mee device lo ela kanipistundo enchukondi.',
       theme: 'Theme',
       themeDesc: 'Light leda dark mode, entire app lo sync avutundi.',
       light: 'Light',
       dark: 'Dark',
       language: 'Bhasha',
-      languageNote: 'Ee demo kosam entire site text anువాదం chesaru.',
+      languageNote: 'Ee demo kosam entire site text anuvadam chesaru.',
       interfaceLanguage: 'Interface bhasha',
       profile: 'Profile',
       displayName: 'Display peru',
@@ -636,7 +663,7 @@ const STRINGS = {
       clearedMsg: 'Chat charitra clear chesaru.',
       clearDesc: 'Anni saved chats ni theeyandi.',
       privacy: 'Privacy',
-      shareData: 'Sమాదానాలను మెరుగుపరచడానికి anonymized data share cheyandi',
+      shareData: 'Samadhanalanu merugu parachadaniki anonymized data share cheyandi',
       usageAnalytics: 'Usage analytics',
     },
     userMenu: {
@@ -651,23 +678,23 @@ const STRINGS = {
       title: 'Legal Orchestrator',
       analyzing: 'Mee prashna analyze avutundi…',
       step1: 'Paristhithi ardham chesukovadam',
-      step2: 'Chatta domain గుర్తించడం',
-      step3: 'Sంబంధిత nipunathanni ఎంచుకోవడం',
+      step2: 'Chatta domain gurthinchadam',
+      step3: 'Sambandhita nipunathanni enchukovadam',
     },
     domain: {
-      identifiedPrefix: 'Domain గుర్తించారు:',
+      identifiedPrefix: 'Domain gurthincharu:',
       detected: 'Gurthinchina domain',
       topic: 'Topic',
-      intent: 'User uddేsam',
+      intent: 'User uddesam',
     },
     recommendation: { title: 'Suchinchina Agent', reason: 'Karanam' },
     handoff: {
       handingOff: 'Handoff avutundi',
-      preparing: 'Contextual handoff siద్ధం avutundi…',
-      contextExtracted: 'Context తీసుకున్నారు',
+      preparing: 'Contextual handoff siddham avutundi…',
+      contextExtracted: 'Context theesukunnaru',
       targetAgent: 'Target agent',
-      working: 'Pని జరుగుతోంది',
-      ready: 'Siద్ధం',
+      working: 'Pani jarugutondi',
+      ready: 'Siddham',
       contextualHandoff: 'contextual handoff',
     },
     agentResponse: {
@@ -676,38 +703,38 @@ const STRINGS = {
     approval: { allow: 'Anumathinchandi', deny: 'Nirakarinchandi' },
     home: {
       title: 'Legal Setu',
-      desc: 'Mee chatta prashnanu saralamaina bhashalo adagandi. Legal Orchestrator sarain domain ni gurthinchi specialist agent ni suchistundi — vaari ని add cheyalo ledo meeru నిర్ణయిస్తారు.',
+      desc: 'Mee chatta prashnanu saralamaina bhashalo adagandi. Legal Orchestrator sarain domain ni gurthinchi specialist agent ni suchistundi — vaari ni add cheyalo ledo meeru nirnayistaru.',
       start: 'Chat prarambhinchandi',
     },
     profile: {
       title: 'Profile',
-      desc: 'Legal Setu lo mee account వివరాలు.',
+      desc: 'Legal Setu lo mee account vivaralu.',
       account: 'Account',
       fullName: 'Poorthi peru',
       email: 'Email',
       signedInVia: 'Sign in chesindi',
-      memberSince: 'Member ెప్పటి nunchi',
+      memberSince: 'Member eppati nunchi',
     },
     login: {
-      welcome: 'Legal Setu కి swagatham',
+      welcome: 'Legal Setu ki swagatham',
       desc: 'Personalized chatta margadarsakatvam kosam sign in cheyandi, mee chat charitra mariyu context mee account lo save avutundi.',
-      magicSentPrefix: 'Magic link pంపారు',
+      magicSentPrefix: 'Magic link pamparu',
       magicSentSuffix: '. Mee inbox check chesi sign in avvadaniki click cheyandi.',
-      redirecting: 'Google కి redirect avutundi…',
-      continueGoogle: 'Google తో continue cheyandi',
+      redirecting: 'Google ki redirect avutundi…',
+      continueGoogle: 'Google to continue cheyandi',
       or: 'leda',
       emailPlaceholder: 'meeru@example.com',
-      sending: 'Link pంపుతోంది…',
-      sendLink: 'Magic link pంపండి',
-      terms: 'Continue chestunnaru ante idi oka hackathon prototype ani, professional chatta salaha ki pratiga kadani ఒప్పుకుంటున్నారు.',
+      sending: 'Link pampuvthondi…',
+      sendLink: 'Magic link pampandi',
+      terms: 'Continue chestunnaru ante idi oka hackathon prototype ani, professional chatta salaha ki pratiga kadani oppukuntunnaru.',
     },
   },
   kn: {
-    nav: { newChat: 'Hosa Samvaada', history: 'Itihaasa' },
+    nav: { newChat: 'ಹೊಸ ಸಂಭಾಷಣೆ', history: 'Itihaasa' },
     chat: {
-      heading: 'Ee dina nimma kanoonu prashnege naanu hege sahaaya maadabahudu?',
-      subheading: 'Saral bhaasheyalli keliri.',
-      placeholder: 'Nimma kanoonu samasyeyannu vivarisi...',
+      heading: 'ಇಂದು ನಿಮ್ಮ ಕಾನೂನು ಪ್ರಶ್ನೆಗೆ ನಾನು ಹೇಗೆ ಸಹಾಯ ಮಾಡಬಹುದು?',
+      subheading: 'ಸರಳ ಭಾಷೆಯಲ್ಲಿ, ನಿಮಗೆ ಅನುಕೂಲಕರವಾದ ಭಾಷೆಯಲ್ಲಿ ಕೇಳಿ.',
+      placeholder: 'ನಿಮ್ಮ ಕಾನೂನು ಸಮಸ್ಯೆಯನ್ನು ವಿವರಿಸಿ...',
       suggestion1: 'Ondu ottige review maadi',
       suggestion2: 'Nanna bhaadige hakkugalannu tilidukoli',
       suggestion3: 'Kanoonu suchane draft maadi',
@@ -817,11 +844,11 @@ const STRINGS = {
     },
   },
   gu: {
-    nav: { newChat: 'Navi Vaatchit', history: 'Itihaas' },
+    nav: { newChat: 'નવી વાતચીત', history: 'Itihaas' },
     chat: {
-      heading: 'Aaje hu tamara kanuni prashnama kem madad kari shaku?',
-      subheading: 'Saral bhashama puchho.',
-      placeholder: 'Tamari kanuni samasya samjavo...',
+      heading: 'આજે હું તમારા કાનૂની પ્રશ્નમાં કેવી રીતે મદદ કરી શકું?',
+      subheading: 'સરળ ભાષામાં, તમને અનુકૂળ હોય તે ભાષામાં પૂછો.',
+      placeholder: 'તમારી કાનૂની સમસ્યાનું વર્ણન કરો...',
       suggestion1: 'Karar review karo',
       suggestion2: 'Mara bhadutdar hakko janavo',
       suggestion3: 'Kanuni notice draft karo',
@@ -930,12 +957,147 @@ const STRINGS = {
       terms: 'Continue karine tame sahmat thao chho ke aa ek hackathon prototype chhe, professional kanuni salah no vikalp nathi.',
     },
   },
+  ur: {
+    nav: { newChat: 'نئی گفتگو' },
+    chat: {
+      heading: 'آج میں آپ کے قانونی سوال میں کیسے مدد کر سکتا ہوں؟',
+      subheading: 'سادہ زبان میں، اس زبان میں پوچھیں جس میں آپ آسانی محسوس کرتے ہیں۔',
+      placeholder: 'اپنا قانونی مسئلہ بیان کریں...',
+    },
+  },
+  or: {
+    nav: { newChat: 'ନୂଆ ଚାଟ୍' },
+    chat: {
+      heading: 'ଆଜି ମୁଁ ଆପଣଙ୍କ ଆଇନଗତ ପ୍ରଶ୍ନରେ କିପରି ସାହାଯ୍ୟ କରିପାରିବି?',
+      subheading: 'ସରଳ ଭାଷାରେ, ଆପଣ ସହଜ ଅନୁଭବ କରୁଥିବା ଭାଷାରେ ପଚାରନ୍ତୁ।',
+      placeholder: 'ଆପଣଙ୍କ ଆଇନଗତ ସମସ୍ୟା ବର୍ଣ୍ଣନା କରନ୍ତୁ...',
+    },
+  },
+  pa: {
+    nav: { newChat: 'ਨਵੀਂ ਗੱਲਬਾਤ' },
+    chat: {
+      heading: 'ਅੱਜ ਮੈਂ ਤੁਹਾਡੇ ਕਾਨੂੰਨੀ ਸਵਾਲ ਵਿੱਚ ਕਿਵੇਂ ਮਦਦ ਕਰ ਸਕਦਾ ਹਾਂ?',
+      subheading: 'ਸਾਦੀ ਭਾਸ਼ਾ ਵਿੱਚ, ਜਿਸ ਭਾਸ਼ਾ ਵਿੱਚ ਤੁਸੀਂ ਸਹਿਜ ਹੋ, ਪੁੱਛੋ।',
+      placeholder: 'ਆਪਣੀ ਕਾਨੂੰਨੀ ਸਮੱਸਿਆ ਦੱਸੋ...',
+    },
+  },
+  ml: {
+    nav: { newChat: 'പുതിയ ചാറ്റ്' },
+    chat: {
+      heading: 'ഇന്ന് നിങ്ങളുടെ നിയമപരമായ ചോദ്യത്തിൽ ഞാൻ എങ്ങനെ സഹായിക്കാം?',
+      subheading: 'ലളിതമായ ഭാഷയിൽ, നിങ്ങൾക്ക് സൗകര്യപ്രദമായ ഭാഷയിൽ ചോദിക്കുക.',
+      placeholder: 'നിങ്ങളുടെ നിയമപ്രശ്നം വിവരിക്കുക...',
+    },
+  },
+  as: {
+    nav: { newChat: 'নতুন আলাপ' },
+    chat: {
+      heading: 'আজি মই আপোনাৰ আইনী প্ৰশ্নত কেনেকৈ সহায় কৰিব পাৰোঁ?',
+      subheading: 'সহজ ভাষাত, আপুনি সহজ অনুভৱ কৰা ভাষাত সোধক।',
+      placeholder: 'আপোনাৰ আইনী সমস্যা বৰ্ণনা কৰক...',
+    },
+  },
+  mai: {
+    nav: { newChat: 'नव बातचीत' },
+    chat: {
+      heading: 'आइ हम अहाँक कानूनी प्रश्नमे कोना मदद क सकैत छी?',
+      subheading: 'सरल भाषामे, जे भाषामे अहाँ सहज होई से पूछू।',
+      placeholder: 'अपन कानूनी समस्या वर्णन करू...',
+    },
+  },
+  sa: {
+    nav: { newChat: 'नूतनं संभाषणम्' },
+    chat: {
+      heading: 'अद्य अहं भवतः विधिविषयकं प्रश्नं कथं साहाय्यं कर्तुं शक्नोमि?',
+      subheading: 'सरलभाषायां, या भाषा भवते सुगमा तस्यां पृच्छतु।',
+      placeholder: 'स्वकीयां विधिसमस्यां वर्णयतु...',
+    },
+  },
+  ks: {
+    nav: { newChat: 'नव गुफ्तगू' },
+    chat: {
+      heading: 'आज़ मैं तोहनिस कानूनी सवालस मंज़ किताह मदद करी हेकां?',
+      subheading: 'आसान ज़बानि मंज़, यि ज़बान तोहय आसान लगान, तिमी पुछिव।',
+      placeholder: 'पनुन कानूनी मसला बयान करिव...',
+    },
+  },
+  ne: {
+    nav: { newChat: 'नयाँ कुराकानी' },
+    chat: {
+      heading: 'आज म तपाईंको कानूनी प्रश्नमा कसरी मद्दत गर्न सक्छु?',
+      subheading: 'सरल भाषामा, तपाईंलाई सहज लाग्ने भाषामा सोध्नुहोस्।',
+      placeholder: 'तपाईंको कानूनी समस्या वर्णन गर्नुहोस्...',
+    },
+  },
+  kok: {
+    nav: { newChat: 'नवें संभाषण' },
+    chat: {
+      heading: 'आज हांव तुमच्या कायदेशीर प्रस्नांत कशी मदत करूं येता?',
+      subheading: 'सोप्या भाशेंत, तुमकां सुविधायेची भास वापरून विचारात.',
+      placeholder: 'तुमची कायदेशीर समस्या वर्णन करात...',
+    },
+  },
+  sd: {
+    nav: { newChat: 'نئين ڳالهه ٻولهه' },
+    chat: {
+      heading: 'اڄ مان توهانجي قانوني سوال ۾ ڪيئن مدد ڪري سگهان ٿو؟',
+      subheading: 'سولي ٻولي ۾، جيڪا ٻولي توهان کي آسان لڳي تنهن ۾ پڇو.',
+      placeholder: 'پنهنجي قانوني مسئلي جو بيان ڪريو...',
+    },
+  },
+  doi: {
+    nav: { newChat: 'नमीं गल्लबात' },
+    chat: {
+      heading: 'अज्ज मैं तुंदे कानूनी सवाल च कि मदद करी सकनै?',
+      subheading: 'सोखी भाशा च, जिस भाशा च तुसें आसान लगदा पुच्छो।',
+      placeholder: 'आपणी कानूनी समस्या दस्सो...',
+    },
+  },
+  mni: {
+    nav: { newChat: 'ꯋꯥꯔꯤ ꯑꯅꯧꯕ' },
+    chat: {
+      heading: 'ꯉꯁꯤ ꯑꯩꯅ ꯅꯪꯒꯤ ꯋꯥꯌꯦꯜ ꯑꯁꯤꯗ ꯀꯔꯝꯅ ꯃꯇꯦꯡ ꯄꯥꯡꯒꯅꯤ?',
+      subheading: 'ꯄꯥꯡꯒꯜ ꯂꯣꯟꯗ, ꯅꯪꯅ ꯆꯪꯅ ꯉꯝꯅꯕ ꯂꯣꯟꯗ ꯍꯪꯕꯤꯌꯨ.',
+      placeholder: 'ꯅꯪꯒꯤ ꯋꯥꯌꯦꯜ ꯋꯥꯐꯝ ꯍꯥꯢꯕꯤꯌꯨ...',
+    },
+  },
+  sat: {
+    nav: { newChat: 'नावा रोड़ो' },
+    chat: {
+      heading: 'तिंगिन आम आम रेयाक़ आइनी प्रोस्नो रे चेत लेकान मदद दाड़ेयाम?',
+      subheading: 'सोलोमोन पारसिक ते, जाहान पारसिक आमाक़ सोलोमोन लागोआ ओना ते कुली मे.',
+      placeholder: 'आमाक़ आइनी गोंडेय ओलाओ मे...',
+    },
+  },
+  brx: {
+    nav: { newChat: 'गोदान सल्लाहनाय' },
+    chat: {
+      heading: 'दिनै आं नोंथाङा कानूनी प्रश्नाव मोन्दिनि दा गोहो होनो हागौ?',
+      subheading: 'सुबुं फोरमानि रावजों, नोंथाङा गोहो जागायथारि रावजों सुंगोन।',
+      placeholder: 'नोंथाङनि कानूनी समस्याखौ फोरमायदों...',
+    },
+  },
 };
 
 export function AppProvider({ children }) {
+  const { user } = useAuth();
   const [language, setLanguage] = useState('en');
   const [historyCleared, setHistoryCleared] = useState(false);
-  const [displayName, setDisplayName] = useState('Arsh Khandelwal');
+  const [displayName, setDisplayName] = useState('');
+  const [nameEdited, setNameEdited] = useState(false);
+
+  // Default the display name from the signed-in account until the user
+  // edits it themselves in Settings.
+  useEffect(() => {
+    if (nameEdited) return;
+    const fallback = user?.user_metadata?.full_name || user?.email?.split('@')[0] || '';
+    setDisplayName(fallback);
+  }, [user, nameEdited]);
+
+  const updateDisplayName = useCallback((name) => {
+    setNameEdited(true);
+    setDisplayName(name);
+  }, []);
 
   const t = useCallback(
     (key) => {
@@ -957,7 +1119,7 @@ export function AppProvider({ children }) {
         historyCleared,
         clearHistory,
         displayName,
-        setDisplayName,
+        setDisplayName: updateDisplayName,
       }}
     >
       {children}

@@ -33,7 +33,7 @@ export default function LanguageSelector() {
         aria-expanded={open}
         onClick={() => setOpen((o) => !o)}
       >
-        <span className="lang-trigger-text">{current.code.toUpperCase()}</span>
+        <span className="lang-trigger-text">{current.label}</span>
         <LegalIcon name="chevronDown" size={14} strokeWidth={2} />
       </button>
       {open && (
