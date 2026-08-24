@@ -5,11 +5,13 @@ import LanguageSelector from './LanguageSelector.jsx';
 import ThemeToggle from './ThemeToggle.jsx';
 import UserMenu from './UserMenu.jsx';
 import { useConversation } from '../context/ConversationContext.jsx';
+import { useApp } from '../context/AppContext.jsx';
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const navigate = useNavigate();
   const { resetConversation } = useConversation();
+  const { t } = useApp();
 
   function handleNewChat() {
     setMobileOpen(false);
@@ -37,7 +39,7 @@ export default function Navbar() {
           <nav className="navbar-nav" aria-label="Primary">
             <button type="button" className="navbar-nav-item" onClick={handleNewChat}>
               <LegalIcon name="plus" size={15} strokeWidth={2} />
-              New Chat
+              {t('newChat')}
             </button>
             <NavLink
               to="/history"
@@ -58,7 +60,7 @@ export default function Navbar() {
       <div className={`mobile-nav-panel${mobileOpen ? ' open' : ''}`}>
         <button type="button" className="navbar-nav-item" onClick={handleNewChat}>
           <LegalIcon name="plus" size={15} strokeWidth={2} />
-          New Chat
+          {t('newChat')}
         </button>
         <NavLink
           to="/history"
