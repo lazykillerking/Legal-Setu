@@ -1,5 +1,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
+/* Self-hosted: some browsers/extensions (e.g. Brave Shields fingerprint
+   protection) block cross-origin font fetches from fonts.gstatic.com,
+   which broke the Santali (Ol Chiki) glyphs. Serving it same-origin
+   avoids that entirely. */
+@font-face {
+  font-family: 'Noto Sans Ol Chiki';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/NotoSansOlChiki.woff2') format('woff2');
+  unicode-range: U+1C50-1C7F, U+20B9;
+}
+
 * {
   box-sizing: border-box;
 }
