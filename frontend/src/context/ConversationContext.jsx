@@ -1,6 +1,8 @@
 import { createContext, useContext, useReducer, useCallback } from 'react';
 import * as api from '../services/legalSetuApi.js';
 import { AGENTS } from '../data/agents.js';
+import { supabase } from '../services/supabaseClient.js';
+import { useAuth } from './AuthContext.jsx';
 
 // ---- Orchestration state machine -------------------------------------------------
 // States: idle -> analyzing -> domainIdentified -> agentRecommended -> awaitingApproval
@@ -61,20 +63,34 @@ const ConversationContext = createContext(null);
 
 export function ConversationProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const { user } = useAuth();
 
   const resetConversation = useCallback(() => dispatch({ type: 'RESET' }), []);
 
   const submitQuery = useCallback(async (text, file) => {
     const id = `m_${Date.now()}`;
     dispatch({ type: 'SUBMIT_QUERY', id, text, file });
+    let conversationId = null;
+    if (supabase && user) {
+      const { data, error } = await supabase
+        .from('legal_conversations')
+        .insert({ user_id: user.id, session_id: crypto.randomUUID(), title: text.replace(/\s+/g, ' ').trim().slice(0, 80) })
+        .select('id')
+        .single();
+      if (!error) {
+        conversationId = data.id;
+        await supabase.from('legal_messages').insert({ conversation_id: conversationId, role: 'user', content: text });
+      }
+    }
     try {
       dispatch({ type: 'SET_STATUS', status: 'analyzing' });
       const { response } = await api.submitQuery(text);
+      if (conversationId) await supabase.from('legal_messages').insert({ conversation_id: conversationId, role: 'assistant', content: response });
       dispatch({ type: 'RESPONSE_READY', response: { agent: AGENTS.legalQuery, lead: response, steps: [], note: '', actions: [] } });
     } catch (err) {
       dispatch({ type: 'ERROR', error: err?.message || 'Something went wrong.' });
     }
-  }, []);
+  }, [user]);
 
   const approve = useCallback(() => {}, []);
 
