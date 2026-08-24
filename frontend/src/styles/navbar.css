@@ -250,6 +250,20 @@
   border: none;
 }
 
+.navbar-signin-btn {
+  height: 34px;
+  padding: 0 16px;
+  border-radius: var(--radius-md);
+  background: var(--primary);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  white-space: nowrap;
+}
+
+.navbar-signin-btn:hover { filter: brightness(1.08); }
+
 .user-menu-header {
   padding: 10px 10px 8px;
   border-bottom: 1px solid var(--border);

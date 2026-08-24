@@ -16,7 +16,7 @@ function initialsOf(name) {
 
 export default function UserMenu() {
   const { displayName, t } = useApp();
-  const { user, signOut } = useAuth();
+  const { user, loading, signOut } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
@@ -32,6 +32,20 @@ export default function UserMenu() {
   }, []);
 
   const initials = initialsOf(displayName);
+
+  if (loading) return null;
+
+  if (!user) {
+    return (
+      <button
+        type="button"
+        className="navbar-signin-btn"
+        onClick={() => navigate('/login')}
+      >
+        {t('userMenu.signIn')}
+      </button>
+    );
+  }
 
   return (
     <div className="user-menu" ref={ref}>
